@@ -1,0 +1,392 @@
+<?xml version="1.0" encoding="utf-8"?>
+<items version="2" >
+
+    <item
+        is-multidex="true"
+        jar="/Users/ali/razor/BTExample/android/app/build/intermediates/exploded-aar/com.google.android.gms/play-services-basement/8.4.0/jars/classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="24.0.2"
+        sha1="8e673cdfadd8f2d98fdb2fda2285c30f6e449782">
+        <dex dex="/Users/ali/razor/BTExample/android/app/build/intermediates/transforms/dex/debug/folders/1000/10/com.google.android.gms-play-services-basement-8.4.0_47d98e2c0fcdbc176a6dabe0bed6d379e65280fb/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/Users/ali/razor/BTExample/android/app/build/intermediates/exploded-aar/com.android.support/support-fragment/24.2.1/jars/classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="24.0.2"
+        sha1="b9a1ac78ad7ef3abedc4a4b30cd92bcacb939d1f">
+        <dex dex="/Users/ali/razor/BTExample/android/app/build/intermediates/transforms/dex/debug/folders/1000/10/com.android.support-support-fragment-24.2.1_558855834f5db4bc45852572046f037045b7664e/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/Users/ali/android/BTExample/app/build/intermediates/exploded-aar/com.google.android.gms/play-services-base/8.4.0/jars/classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="24.0.2"
+        sha1="fef2b3e4b6b1b0e5fe7b69fa137a5fa55a3182ab">
+        <dex dex="/Users/ali/android/BTExample/app/build/intermediates/transforms/dex/debug/folders/1000/10/com.google.android.gms-play-services-base-8.4.0_c1d0e34d01296a6bd6b1809c176da583a03906a0/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/Users/ali/razor/BTExample/android/app/build/intermediates/incremental-classes/debug/instant-run-bootstrap.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="24.0.2"
+        sha1="961e207b5a55caa497a38f36e8fa0354578f48c5">
+        <dex dex="/Users/ali/razor/BTExample/android/app/build/intermediates/transforms/dex/debug/folders/1000/10/instant-run-bootstrap_cc6ac82c68c8aea1a3b5cc3821777853649331e9/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/Users/ali/android/BTExample/app/build/intermediates/exploded-aar/com.android.support/support-compat/24.2.1/jars/classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="24.0.2"
+        sha1="0ecb4b595fa0f0f8018a149ace3ea6525624f94e">
+        <dex dex="/Users/ali/android/BTExample/app/build/intermediates/transforms/dex/debug/folders/1000/10/com.android.support-support-compat-24.2.1_ef40f2d9a70e8bb105f2f5651e2e52756cc084ac/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/Users/ali/android/BTExample/app/build/intermediates/exploded-aar/com.android.support/support-core-ui/24.2.1/jars/libs/internal_impl-24.2.1.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="24.0.2"
+        sha1="867dad63c33388ff8c7644b236579355036d075f">
+        <dex dex="/Users/ali/android/BTExample/app/build/intermediates/transforms/dex/debug/folders/1000/10/internal_impl-24.2.1_2a89b052427a92f1312ef8f64711da1df686ca85/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/Users/ali/razor/BTExample/android/app/build/intermediates/exploded-aar/com.android.support/design/24.2.1/jars/classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="24.0.2"
+        sha1="e03f47f3d1017a093bb3239d4ec47c3447f40744">
+        <dex dex="/Users/ali/razor/BTExample/android/app/build/intermediates/transforms/dex/debug/folders/1000/10/com.android.support-design-24.2.1_5a4134cd2df4f32f607046af34059f23ad9dc65c/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/Users/ali/razor/BTExample/android/app/build/intermediates/exploded-aar/com.android.support/appcompat-v7/24.2.1/jars/classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="24.0.2"
+        sha1="43b2dba6b5a0b14527961b75329d0b90025f15ea">
+        <dex dex="/Users/ali/razor/BTExample/android/app/build/intermediates/transforms/dex/debug/folders/1000/10/com.android.support-appcompat-v7-24.2.1_465ec8b695edbadf6433e9e4070f1c17208b0b37/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/Users/ali/razor/BTExample/android/app/build/intermediates/exploded-aar/com.google.android.gms/play-services-base/8.4.0/jars/classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="24.0.2"
+        sha1="fef2b3e4b6b1b0e5fe7b69fa137a5fa55a3182ab">
+        <dex dex="/Users/ali/razor/BTExample/android/app/build/intermediates/transforms/dex/debug/folders/1000/10/com.google.android.gms-play-services-base-8.4.0_8ae3ef84af531532143a5a3871dc21385c23bf77/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/Users/ali/android/BTExample/app/build/intermediates/exploded-aar/com.android.support/support-fragment/24.2.1/jars/classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="24.0.2"
+        sha1="b9a1ac78ad7ef3abedc4a4b30cd92bcacb939d1f">
+        <dex dex="/Users/ali/android/BTExample/app/build/intermediates/transforms/dex/debug/folders/1000/10/com.android.support-support-fragment-24.2.1_62d70846829b506eeb1003935c62393186b3381c/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/Users/ali/android/BTExample/app/build/intermediates/exploded-aar/com.android.support/support-vector-drawable/24.2.1/jars/classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="24.0.2"
+        sha1="d5c731fc64c03dfe04d51134955b483551c35849">
+        <dex dex="/Users/ali/android/BTExample/app/build/intermediates/transforms/dex/debug/folders/1000/10/com.android.support-support-vector-drawable-24.2.1_c420e2c116a9b4f09dd48e9e3ec3c9ecbd4c1bc0/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/Users/ali/razor/BTExample/android/app/build/intermediates/exploded-aar/com.android.support/support-core-ui/24.2.1/jars/classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="24.0.2"
+        sha1="e7f3132168957eefc46229fc32c3bd464642b71e">
+        <dex dex="/Users/ali/razor/BTExample/android/app/build/intermediates/transforms/dex/debug/folders/1000/10/com.android.support-support-core-ui-24.2.1_df57ade25fad56ac262fe2aaba6e15a9700d56a5/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/Users/ali/razor/BTExample/android/app/build/intermediates/exploded-aar/com.google.android.gms/play-services-appindexing/8.4.0/jars/classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="24.0.2"
+        sha1="65d086ee9daaf87b5af62ad24471edafa433354c">
+        <dex dex="/Users/ali/razor/BTExample/android/app/build/intermediates/transforms/dex/debug/folders/1000/10/com.google.android.gms-play-services-appindexing-8.4.0_87707559f1d303bdef265ea20134b124dfefdec2/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/Users/ali/android/BTExample/app/build/intermediates/exploded-aar/com.android.support/animated-vector-drawable/24.2.1/jars/classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="24.0.2"
+        sha1="94bc1dfb84dcc8b6f6f8f7cc726d7b2dd39c1574">
+        <dex dex="/Users/ali/android/BTExample/app/build/intermediates/transforms/dex/debug/folders/1000/10/com.android.support-animated-vector-drawable-24.2.1_9b4077fe098b3823eec4939ec233ccbde15d7796/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/Users/ali/razor/BTExample/android/app/build/intermediates/exploded-aar/com.android.support/support-media-compat/24.2.1/jars/libs/internal_impl-24.2.1.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="24.0.2"
+        sha1="fbf8da429efd5ad21e02e3e5ecaa1efc4167878d">
+        <dex dex="/Users/ali/razor/BTExample/android/app/build/intermediates/transforms/dex/debug/folders/1000/10/internal_impl-24.2.1_75d97e17f81bcb9c3f2fbfffe19796f132221e73/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/Users/ali/android/BTExample/app/build/intermediates/exploded-aar/com.google.android.gms/play-services-basement/8.4.0/jars/classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="24.0.2"
+        sha1="8e673cdfadd8f2d98fdb2fda2285c30f6e449782">
+        <dex dex="/Users/ali/android/BTExample/app/build/intermediates/transforms/dex/debug/folders/1000/10/com.google.android.gms-play-services-basement-8.4.0_124f0f4df44a761238e2fbdefb1e16088fb3a28b/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/Users/ali/android/BTExample/app/build/intermediates/exploded-aar/com.android.support/appcompat-v7/24.2.1/jars/classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="24.0.2"
+        sha1="43b2dba6b5a0b14527961b75329d0b90025f15ea">
+        <dex dex="/Users/ali/android/BTExample/app/build/intermediates/transforms/dex/debug/folders/1000/10/com.android.support-appcompat-v7-24.2.1_be665b94644f01dc33a91c989402beac0ac002d7/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/Users/ali/razor/BTExample/android/app/build/intermediates/exploded-aar/com.android.support/recyclerview-v7/24.2.1/jars/classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="24.0.2"
+        sha1="7521486d9bfd2cd9e756e0cf75ed7d97f2ce2d3b">
+        <dex dex="/Users/ali/razor/BTExample/android/app/build/intermediates/transforms/dex/debug/folders/1000/10/com.android.support-recyclerview-v7-24.2.1_10a94c06e213d8fee4adc6252759d6111700c7e4/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/Users/ali/razor/BTExample/android/app/build/intermediates/exploded-aar/com.android.support/support-media-compat/24.2.1/jars/classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="24.0.2"
+        sha1="09b462bbcb77650284bd6614f1a32f360ef369f8">
+        <dex dex="/Users/ali/razor/BTExample/android/app/build/intermediates/transforms/dex/debug/folders/1000/10/com.android.support-support-media-compat-24.2.1_82f227448ac3f7ae7bb25529821dbc8b5a3fb056/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/Users/ali/android/BTExample/app/build/intermediates/exploded-aar/com.android.support/support-compat/24.2.1/jars/libs/internal_impl-24.2.1.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="24.0.2"
+        sha1="7e4389bd133359a2ff88623ff1e4ff93d6e6f780">
+        <dex dex="/Users/ali/android/BTExample/app/build/intermediates/transforms/dex/debug/folders/1000/10/internal_impl-24.2.1_9db9113d34f815d73703ba5f7e7ff458716141d3/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/Users/ali/android/BTExample/app/build/intermediates/exploded-aar/com.android.support/support-media-compat/24.2.1/jars/classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="24.0.2"
+        sha1="09b462bbcb77650284bd6614f1a32f360ef369f8">
+        <dex dex="/Users/ali/android/BTExample/app/build/intermediates/transforms/dex/debug/folders/1000/10/com.android.support-support-media-compat-24.2.1_00e140037d1f9b89884cf83fc0fcc07d087232d1/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/Users/ali/android/BTExample/app/build/intermediates/exploded-aar/com.android.support/design/24.2.1/jars/classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="24.0.2"
+        sha1="e03f47f3d1017a093bb3239d4ec47c3447f40744">
+        <dex dex="/Users/ali/android/BTExample/app/build/intermediates/transforms/dex/debug/folders/1000/10/com.android.support-design-24.2.1_482737901bca36b206f94f2ca59a35f50b103844/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/Users/ali/razor/BTExample/android/app/build/intermediates/incremental-runtime-classes/debug/instant-run.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="24.0.2"
+        sha1="0f7ba61136e8305b2b36fddfac129fd86c512c4a">
+        <dex dex="/Users/ali/razor/BTExample/android/app/build/intermediates/transforms/dex/debug/folders/1000/10/instant-run_4c86fdf0b99e0b3b236007f0d6930e0fa58df315/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/Users/ali/razor/BTExample/android/app/build/intermediates/exploded-aar/com.android.support/support-v4/24.2.1/jars/classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="24.0.2"
+        sha1="d7c42c80f6509b9ea4db28ca7859ffae08ec5741">
+        <dex dex="/Users/ali/razor/BTExample/android/app/build/intermediates/transforms/dex/debug/folders/1000/10/com.android.support-support-v4-24.2.1_555bc9423a02671e8345575ebcfedac4054f8cea/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/Users/ali/razor/BTExample/android/app/build/intermediates/exploded-aar/com.android.support/support-fragment/24.2.1/jars/libs/internal_impl-24.2.1.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="24.0.2"
+        sha1="5f64d657e838e8375135c0f6057a7ff8fab6a50e">
+        <dex dex="/Users/ali/razor/BTExample/android/app/build/intermediates/transforms/dex/debug/folders/1000/10/internal_impl-24.2.1_a62d9b5c760d4aa7b5687ad48449326b1d59b294/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/Users/ali/razor/BTExample/android/app/build/intermediates/exploded-aar/com.android.support/animated-vector-drawable/24.2.1/jars/classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="24.0.2"
+        sha1="94bc1dfb84dcc8b6f6f8f7cc726d7b2dd39c1574">
+        <dex dex="/Users/ali/razor/BTExample/android/app/build/intermediates/transforms/dex/debug/folders/1000/10/com.android.support-animated-vector-drawable-24.2.1_32e4ad4c4cb95f573d2faac2f5e949c4c6ece416/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/Users/ali/Library/Android/sdk/extras/android/m2repository/com/android/support/support-annotations/24.2.1/support-annotations-24.2.1.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="24.0.2"
+        sha1="8de3aafecbdf98a61db6427f008f2d515bcd2544">
+        <dex dex="/Users/ali/android/BTExample/app/build/intermediates/transforms/dex/debug/folders/1000/10/support-annotations-24.2.1_2c36736283acdf81f28d2758bf521b9678b1ad0b/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/Users/ali/android/BTExample/app/build/intermediates/exploded-aar/com.android.support/support-core-ui/24.2.1/jars/classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="24.0.2"
+        sha1="e7f3132168957eefc46229fc32c3bd464642b71e">
+        <dex dex="/Users/ali/android/BTExample/app/build/intermediates/transforms/dex/debug/folders/1000/10/com.android.support-support-core-ui-24.2.1_d2a08ea67a9d6fbe54ca710491dd3a7f17247666/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/Users/ali/razor/BTExample/android/app/build/intermediates/exploded-aar/com.android.support/support-core-ui/24.2.1/jars/libs/internal_impl-24.2.1.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="24.0.2"
+        sha1="867dad63c33388ff8c7644b236579355036d075f">
+        <dex dex="/Users/ali/razor/BTExample/android/app/build/intermediates/transforms/dex/debug/folders/1000/10/internal_impl-24.2.1_9fba31ddd25ecae0cb5ef1bb953164423d2f96ac/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/Users/ali/android/BTExample/app/build/intermediates/exploded-aar/com.android.support/support-core-utils/24.2.1/jars/classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="24.0.2"
+        sha1="9c4c3bc902450c39ed54de170db4fb12aea20a35">
+        <dex dex="/Users/ali/android/BTExample/app/build/intermediates/transforms/dex/debug/folders/1000/10/com.android.support-support-core-utils-24.2.1_59a226a95b6be2bdb237918cfab329c9092a7298/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/Users/ali/razor/BTExample/android/app/build/intermediates/exploded-aar/com.android.support/support-core-utils/24.2.1/jars/classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="24.0.2"
+        sha1="9c4c3bc902450c39ed54de170db4fb12aea20a35">
+        <dex dex="/Users/ali/razor/BTExample/android/app/build/intermediates/transforms/dex/debug/folders/1000/10/com.android.support-support-core-utils-24.2.1_620d1889c00321946f5ddcbb1df090f0eba98909/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/Users/ali/android/BTExample/app/build/intermediates/exploded-aar/com.google.android.gms/play-services-appindexing/8.4.0/jars/classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="24.0.2"
+        sha1="65d086ee9daaf87b5af62ad24471edafa433354c">
+        <dex dex="/Users/ali/android/BTExample/app/build/intermediates/transforms/dex/debug/folders/1000/10/com.google.android.gms-play-services-appindexing-8.4.0_ef4a9c95c4dcb6ec0623b5e672144c9d2b3a6456/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/Users/ali/android/BTExample/app/build/intermediates/exploded-aar/com.android.support/support-fragment/24.2.1/jars/libs/internal_impl-24.2.1.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="24.0.2"
+        sha1="5f64d657e838e8375135c0f6057a7ff8fab6a50e">
+        <dex dex="/Users/ali/android/BTExample/app/build/intermediates/transforms/dex/debug/folders/1000/10/internal_impl-24.2.1_be6fe17b01034a5a1235a9e43050e4349dea6d45/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/Users/ali/razor/BTExample/android/app/build/intermediates/exploded-aar/com.android.support/support-core-utils/24.2.1/jars/libs/internal_impl-24.2.1.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="24.0.2"
+        sha1="935a969265b2a166b2d20415423f5f6e90fe16e0">
+        <dex dex="/Users/ali/razor/BTExample/android/app/build/intermediates/transforms/dex/debug/folders/1000/10/internal_impl-24.2.1_4133d4d2d578bfd10fec16da6c1a115165137006/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/Users/ali/android/BTExample/app/build/intermediates/incremental-runtime-classes/debug/instant-run.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="24.0.2"
+        sha1="5c8da499fc2b2a863c2572e8880d625fb3684067">
+        <dex dex="/Users/ali/android/BTExample/app/build/intermediates/transforms/dex/debug/folders/1000/10/instant-run_3826589460617def7bef9c9d8b658cf2c429cddd/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/Users/ali/android/BTExample/app/build/intermediates/exploded-aar/com.android.support/support-media-compat/24.2.1/jars/libs/internal_impl-24.2.1.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="24.0.2"
+        sha1="fbf8da429efd5ad21e02e3e5ecaa1efc4167878d">
+        <dex dex="/Users/ali/android/BTExample/app/build/intermediates/transforms/dex/debug/folders/1000/10/internal_impl-24.2.1_0abf3df0d75ef7103d880c4da6aae4af7b9ee534/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/Users/ali/razor/BTExample/android/app/build/intermediates/exploded-aar/com.android.support/support-compat/24.2.1/jars/libs/internal_impl-24.2.1.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="24.0.2"
+        sha1="7e4389bd133359a2ff88623ff1e4ff93d6e6f780">
+        <dex dex="/Users/ali/razor/BTExample/android/app/build/intermediates/transforms/dex/debug/folders/1000/10/internal_impl-24.2.1_03b9fd7e06794865c37dbdb196999e6717fae9e4/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/Users/ali/android/BTExample/app/build/intermediates/exploded-aar/com.android.support/support-v4/24.2.1/jars/classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="24.0.2"
+        sha1="d7c42c80f6509b9ea4db28ca7859ffae08ec5741">
+        <dex dex="/Users/ali/android/BTExample/app/build/intermediates/transforms/dex/debug/folders/1000/10/com.android.support-support-v4-24.2.1_a638b9449318d3667ebf1ab6001c218c01421bc2/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/Users/ali/android/BTExample/app/build/intermediates/exploded-aar/com.android.support/recyclerview-v7/24.2.1/jars/classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="24.0.2"
+        sha1="7521486d9bfd2cd9e756e0cf75ed7d97f2ce2d3b">
+        <dex dex="/Users/ali/android/BTExample/app/build/intermediates/transforms/dex/debug/folders/1000/10/com.android.support-recyclerview-v7-24.2.1_037eb9ded2a8330cac34157fc22609ccc7c5636a/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/Users/ali/android/BTExample/app/build/intermediates/exploded-aar/com.android.support/support-core-utils/24.2.1/jars/libs/internal_impl-24.2.1.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="24.0.2"
+        sha1="935a969265b2a166b2d20415423f5f6e90fe16e0">
+        <dex dex="/Users/ali/android/BTExample/app/build/intermediates/transforms/dex/debug/folders/1000/10/internal_impl-24.2.1_c027349293a266f175eb8abb64941a919e86c534/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/Users/ali/android/BTExample/app/build/intermediates/incremental-classes/debug/instant-run-bootstrap.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="24.0.2"
+        sha1="0785e468bf8019d12ff6e0c748805c8fd8c993ec">
+        <dex dex="/Users/ali/android/BTExample/app/build/intermediates/transforms/dex/debug/folders/1000/10/instant-run-bootstrap_af3ea3fd2703005e0d5399833ecceb94d0705988/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/Users/ali/razor/BTExample/android/app/build/intermediates/exploded-aar/com.android.support/support-compat/24.2.1/jars/classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="24.0.2"
+        sha1="0ecb4b595fa0f0f8018a149ace3ea6525624f94e">
+        <dex dex="/Users/ali/razor/BTExample/android/app/build/intermediates/transforms/dex/debug/folders/1000/10/com.android.support-support-compat-24.2.1_720ce63cc343ce48ae76988dfd0b42ed3e971d86/classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
+        jar="/Users/ali/razor/BTExample/android/app/build/intermediates/exploded-aar/com.android.support/support-vector-drawable/24.2.1/jars/classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="24.0.2"
+        sha1="d5c731fc64c03dfe04d51134955b483551c35849">
+        <dex dex="/Users/ali/razor/BTExample/android/app/build/intermediates/transforms/dex/debug/folders/1000/10/com.android.support-support-vector-drawable-24.2.1_95e890fd7cafce09c78594ff2bc89be42c62b029/classes.dex" />
+    </item>
+
+</items>
