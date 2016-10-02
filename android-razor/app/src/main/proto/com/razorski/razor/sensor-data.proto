@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+option java_package = "com.razorski.razor";
+option java_multiple_files = true;
+
+message FootData {
+    int32 tilt = 1;
+}
+
+message SensorData {
+    FootData right_foot = 1;
+    FootData left_foot = 2;
+}
