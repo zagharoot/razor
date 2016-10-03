@@ -5,6 +5,8 @@ option java_multiple_files = true;
 
 message FootData {
     int32 tilt = 1;
+    int32 front_force = 2;
+    int32 velocity = 3;
 }
 
 message SensorData {

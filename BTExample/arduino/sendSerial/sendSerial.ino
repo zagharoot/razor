@@ -35,7 +35,7 @@ struct Sensors {
     String firstStr(first);
     String secondStr(second);
     String thirdStr(third);
-    return String("{" + firstStr + "," + secondStr + "," + thirdStr + "}");
+    return String("{{" + firstStr + "," + secondStr + "," + thirdStr + "}, {" + firstStr + "," + secondStr + "," + thirdStr + "}}");
   }
 };
 
