@@ -117,7 +117,7 @@ class SensorDataTextParser extends SensorDataStreamParser {
      */
     @Nullable
     private SensorData parseMessage(String message) {
-        Log.d(TAG, "parsing message in parser thread: " + message);
+//        Log.d(TAG, "parsing message in parser thread: " + message);
         Scanner s = new Scanner(message);
         s.findInLine("\\{\\{(\\d+),(\\d+),(\\d+)\\}, \\{(\\d+),(\\d+),(\\d+)\\}\\}");
         MatchResult result = s.match();

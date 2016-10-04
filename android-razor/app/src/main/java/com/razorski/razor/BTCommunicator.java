@@ -3,6 +3,7 @@ package com.razorski.razor;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
+import android.os.Handler;
 import android.util.Log;
 
 import java.io.IOException;
@@ -21,6 +22,9 @@ public class BTCommunicator implements Runnable {
     private UUID uuid;
     private final String btAddress;
 
+    // Pointer to the main UI handler, where we send connection status.
+    private Handler parentHandler;
+
     // Objects to manage the connection to the device.
     private BluetoothAdapter btAdapter = null;
     private BluetoothSocket btSocket = null;
@@ -35,10 +39,12 @@ public class BTCommunicator implements Runnable {
     // Whether we should automatically reconnect if the connection is lost.
     private boolean autoConnect = true;
 
-    public BTCommunicator(UUID uuid_, String btAddress_, SensorDataStreamParser streamParser_) {
+    public BTCommunicator(UUID uuid_, String btAddress_, SensorDataStreamParser streamParser_, Handler parentHandler_) {
         uuid = uuid_;
         btAddress = btAddress_;
         streamParser = streamParser_;
+
+        parentHandler = parentHandler_;
 
         btAdapter = BluetoothAdapter.getDefaultAdapter();
         btDevice = btAdapter.getRemoteDevice(btAddress);
@@ -57,12 +63,23 @@ public class BTCommunicator implements Runnable {
         tryClose();
     }
 
+    public void setAutoConnect(boolean value) {
+        autoConnect = value;
+    }
+
+    private void sendConnectionMessage(int message) {
+        parentHandler.obtainMessage(message).sendToTarget();
+    }
+
     /**
      * Tries to close the connection.
      */
     private void tryClose() {
         try {
-            btSocket.close();
+            if (btSocket != null) {
+                btSocket.close();
+            }
+            sendConnectionMessage(MainActivity.HW_DISCONNECTED);
         } catch (IOException e) {
             Log.d(TAG, "Exception closing BT socket in BT thread: " + e.toString());
         } finally {
@@ -78,17 +95,18 @@ public class BTCommunicator implements Runnable {
     private boolean verifyBTConnected() {
         // We're already connected.
         if (btSocket != null && btSocket.isConnected()) {
+            sendConnectionMessage(MainActivity.HW_CONNECTED);
             return true;
         }
 
         Log.d(TAG, "updateBTStatus is NOT already connected");
         // Sorry, we're just not connected and don't want to connect either.
         if (!autoConnect) {
+            sendConnectionMessage(MainActivity.HW_DISCONNECTED);
             return false;
         }
 
-        boolean connected = tryConnect();
-        return connected;
+        return tryConnect();
     }
 
     /**
@@ -96,6 +114,7 @@ public class BTCommunicator implements Runnable {
      * @return
      */
     private boolean tryConnect() {
+        sendConnectionMessage(MainActivity.HW_CONNECTING);
         try {
             if (btDevice == null) {
                 btDevice = btAdapter.getRemoteDevice(btAddress);
@@ -106,7 +125,9 @@ public class BTCommunicator implements Runnable {
 
             mmInStream = btSocket.getInputStream();
             mmOutStream = btSocket.getOutputStream();
+            sendConnectionMessage(MainActivity.HW_CONNECTED);
         } catch (IOException e) {
+            sendConnectionMessage(MainActivity.HW_DISCONNECTED);
             Log.d(TAG, "Exception creating BT socket in BT thread: " + e.toString());
             btDevice = null;
             return false;

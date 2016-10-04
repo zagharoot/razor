@@ -42,15 +42,15 @@ struct Sensors {
 Sensors sensor = { 5, 4, 3};
 
 void loop() { // run over and over
-/*  sensorValue = analogRead(sensorPin);
-  Serial.println(sensorValue);
-  mySerial.write(sensorValue);
-*/
+  sensorValue = analogRead(sensorPin);
+  float voltage= sensorValue * (5.0 / 1023.0);
 
+  Serial.println(voltage);
+//  mySerial.write(sensorValue);
+  sensor.first = sensorValue;
   mySerial.println(sensor.toString());
-//  mySerial.println("abcdf");
   
-  delay(5000);  
+  delay(100);  
   /*
   if (mySerial.available()) {
     char a = mySerial.read();

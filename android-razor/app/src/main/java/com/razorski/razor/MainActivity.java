@@ -4,6 +4,9 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
+import android.widget.CheckBox;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.razorski.razor.data.SensorDataUtils;
@@ -19,6 +22,9 @@ public class MainActivity extends AppCompatActivity {
 
     // Message IDs that we handle here.
     public static final int RECEIVED_DATA = 1;
+    public static final int HW_CONNECTED = 2;
+    public static final int HW_CONNECTING = 3;
+    public static final int HW_DISCONNECTED = 4;
 
     // Handler of messages.
     private Handler dataHandler;
@@ -32,6 +38,8 @@ public class MainActivity extends AppCompatActivity {
 
     // Pointer to my UI elements.
     TextView sensorValueTextView;
+    ProgressBar progressBar;
+    CheckBox connectionCheckBox;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,8 +50,30 @@ public class MainActivity extends AppCompatActivity {
                 switch (message.what) {
                     case RECEIVED_DATA:
                         SensorData data = (SensorData) message.obj;
-                        Log.d(TAG, "Received data in UI thread:" + SensorDataUtils.toString(data));
+//                        Log.d(TAG, "Received data in UI thread:" + SensorDataUtils.toString(data));
                         sensorValueTextView.setText(SensorDataUtils.toString(data));
+                        break;
+                    case HW_CONNECTED:
+                        if (!connectionCheckBox.getText().equals("Connected")) {
+                            progressBar.setVisibility(View.GONE);
+                            connectionCheckBox.setText("Connected");
+                            connectionCheckBox.setChecked(true);
+                        }
+                        break;
+                    case HW_CONNECTING:
+                        if (!connectionCheckBox.getText().equals("Connecting...")) {
+                            progressBar.setVisibility(View.VISIBLE);
+                            progressBar.animate();
+                            connectionCheckBox.setText("Connecting...");
+                            connectionCheckBox.setChecked(false);
+                        }
+                        break;
+                    case HW_DISCONNECTED:
+                        if (!connectionCheckBox.getText().equals("Disconnected")) {
+                            progressBar.setVisibility(View.GONE);
+                            connectionCheckBox.setText("Disconnected");
+                            connectionCheckBox.setChecked(false);
+                        }
                         break;
                     default:
                         super.handleMessage(message);
@@ -56,7 +86,7 @@ public class MainActivity extends AppCompatActivity {
         dataManager = new SensorDataManager(dataHandler);
         streamParser = new SensorDataTextParser(dataManager);
 
-        btCommunicator = new BTCommunicator(MY_UUID, BT_ADDRESS, streamParser);
+        btCommunicator = new BTCommunicator(MY_UUID, BT_ADDRESS, streamParser, dataHandler);
 
         dataManagerThread = new Thread(dataManager);
         btThread = new Thread(btCommunicator);
@@ -64,5 +94,16 @@ public class MainActivity extends AppCompatActivity {
         btThread.start();
 
         sensorValueTextView = (TextView) findViewById(R.id.sensorValueText);
+        progressBar = (ProgressBar) findViewById(R.id.progressBar);
+        connectionCheckBox = (CheckBox) findViewById(R.id.connectionStatus);
+
+        connectionCheckBox.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG, "on check clicked: " + connectionCheckBox.isChecked());
+                btCommunicator.setAutoConnect(connectionCheckBox.isChecked());
+            }
+        });
     }
 }

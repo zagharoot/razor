@@ -2,7 +2,6 @@ package com.razorski.razor;
 
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 
 /**
  * Maintains the set of received SensorData protos from the hardware.
@@ -27,7 +26,6 @@ public class SensorDataManager implements Runnable {
      * thread and NOT in our own thread.
      */
     public void addData(SensorData data) {
-        Log.d(TAG, "DM addData is called from " + android.os.Process.myTid());
         myHandler.obtainMessage(MainActivity.RECEIVED_DATA, data).sendToTarget();
     }
 
