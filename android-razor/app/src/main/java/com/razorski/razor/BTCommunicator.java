@@ -17,10 +17,11 @@ import java.util.UUID;
 public class BTCommunicator implements Runnable {
     private final String TAG = BTCommunicator.class.getName();
 
+    // Parameters needed to create bluetooth connection to the device.
     private UUID uuid;
     private final String btAddress;
-    private SensorDataStreamParser streamParser;
 
+    // Objects to manage the connection to the device.
     private BluetoothAdapter btAdapter = null;
     private BluetoothSocket btSocket = null;
     private BluetoothDevice btDevice = null;
@@ -28,6 +29,10 @@ public class BTCommunicator implements Runnable {
     private InputStream mmInStream = null;
     private OutputStream mmOutStream = null;
 
+    // Object that is capable of parsing input stream to our data.
+    private SensorDataStreamParser streamParser;
+
+    // Whether we should automatically reconnect if the connection is lost.
     private boolean autoConnect = true;
 
     public BTCommunicator(UUID uuid_, String btAddress_, SensorDataStreamParser streamParser_) {
@@ -39,48 +44,75 @@ public class BTCommunicator implements Runnable {
         btDevice = btAdapter.getRemoteDevice(btAddress);
     }
 
-    private boolean updateBTStatus() {
+    /**
+     * Forcibly connects to the bluetooth, also sets the autoConnect to true.
+     */
+    public void forceConnect() {
+        autoConnect = true;
+        tryConnect();
+    }
+
+    public void forceClose() {
+        autoConnect = false;
+        tryClose();
+    }
+
+    /**
+     * Tries to close the connection.
+     */
+    private void tryClose() {
+        try {
+            btSocket.close();
+        } catch (IOException e) {
+            Log.d(TAG, "Exception closing BT socket in BT thread: " + e.toString());
+        } finally {
+            btSocket = null;
+        }
+    }
+
+    /**
+     * Makes sure the connection is still active.
+     * <p>If connection is lost and auto connect is true, tries to reconnect.</p>
+     * <p>Returns true if at the end we have a connection.</p>
+     */
+    private boolean verifyBTConnected() {
+        // We're already connected.
         if (btSocket != null && btSocket.isConnected()) {
-            Log.d(TAG, "updateBTStatus is already connected");
             return true;
         }
-        Log.d(TAG, "updateBTStatus is NOT already connected");
 
+        Log.d(TAG, "updateBTStatus is NOT already connected");
+        // Sorry, we're just not connected and don't want to connect either.
         if (!autoConnect) {
             return false;
         }
 
-        return tryConnect();
+        boolean connected = tryConnect();
+        return connected;
     }
 
+    /**
+     * Tries to establish bluetooth connection and returns true if succeeds.
+     * @return
+     */
     private boolean tryConnect() {
         try {
-            btSocket = btDevice.createInsecureRfcommSocketToServiceRecord(uuid);
+            if (btDevice == null) {
+                btDevice = btAdapter.getRemoteDevice(btAddress);
+            }
 
+            btSocket = btDevice.createInsecureRfcommSocketToServiceRecord(uuid);
             btSocket.connect();
 
             mmInStream = btSocket.getInputStream();
             mmOutStream = btSocket.getOutputStream();
         } catch (IOException e) {
             Log.d(TAG, "Exception creating BT socket in BT thread: " + e.toString());
+            btDevice = null;
             return false;
         }
 
         return true;
-    }
-
-    public void forceClose() {
-        try {
-            btSocket.close();
-        } catch (IOException e) {
-            Log.d(TAG, "Exception closing BT socket in BT thread: " + e.toString());
-            btSocket = null;
-        }
-    }
-
-    public void forceConnect() {
-        autoConnect = true;
-        tryConnect();
     }
 
     @Override
@@ -91,11 +123,12 @@ public class BTCommunicator implements Runnable {
         forceConnect();
 
         while(true) {
-            if (updateBTStatus()) {
+            if (verifyBTConnected()) {
                 try {
                     bytes = mmInStream.read(buffer);
                     streamParser.processData(buffer, bytes);
                 } catch (IOException e) {
+                    tryClose();
                 }
             }
         }

@@ -12,19 +12,25 @@ import java.util.UUID;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = MainActivity.class.getName();
-    private Handler dataHandler;
 
+    // TODO: These are hardcoded, need to change.
     public static final String BT_ADDRESS = "20:15:12:08:71:82";
     private static final UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
 
+    // Message IDs that we handle here.
     public static final int RECEIVED_DATA = 1;
 
+    // Handler of messages.
+    private Handler dataHandler;
+
+    // Pointer to objects that get and process data in other threads.
     SensorDataManager dataManager;
     Thread dataManagerThread;
     BTCommunicator btCommunicator;
     Thread btThread;
     SensorDataStreamParser streamParser;
 
+    // Pointer to my UI elements.
     TextView sensorValueTextView;
 
     @Override

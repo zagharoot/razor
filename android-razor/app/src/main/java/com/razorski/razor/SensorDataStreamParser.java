@@ -14,7 +14,6 @@ import static java.lang.Math.max;
  * An abstract class that is capable of parsing data stream as they are transmitted over BT
  * and generating SensorData proto.
  */
-
 public abstract class SensorDataStreamParser {
     private SensorDataManager dataManager;
     private Queue<SensorData> dataToProcess = new ArrayBlockingQueue<SensorData>(5);
@@ -101,9 +100,10 @@ class SensorDataTextParser extends SensorDataStreamParser {
             if (braceBalance == 0) {
                 if (maxBraces == 2) {
                     SensorData data = parseMessage(messageBuilder.toString());
-                    addData(data);
+                    if (data != null) {
+                        addData(data);
+                    }
                 }
-
                 reset();
             }
 
