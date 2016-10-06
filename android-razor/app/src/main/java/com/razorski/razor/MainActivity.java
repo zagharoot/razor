@@ -97,12 +97,12 @@ public class MainActivity extends AppCompatActivity {
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
         connectionCheckBox = (CheckBox) findViewById(R.id.connectionStatus);
 
+        // Clicking on the connected checkbox will toggle connect/disconnect from HW.
         connectionCheckBox.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
-                Log.d(TAG, "on check clicked: " + connectionCheckBox.isChecked());
-                btCommunicator.setAutoConnect(connectionCheckBox.isChecked());
+                btCommunicator.setConnect(connectionCheckBox.isChecked());
             }
         });
     }

@@ -36,8 +36,8 @@ public class BTCommunicator implements Runnable {
     // Object that is capable of parsing input stream to our data.
     private SensorDataStreamParser streamParser;
 
-    // Whether we should automatically reconnect if the connection is lost.
-    private boolean autoConnect = true;
+    // Whether we'd like to be connected to the HW.
+    private boolean wantConnect = true;
 
     public BTCommunicator(UUID uuid_, String btAddress_, SensorDataStreamParser streamParser_, Handler parentHandler_) {
         uuid = uuid_;
@@ -51,20 +51,10 @@ public class BTCommunicator implements Runnable {
     }
 
     /**
-     * Forcibly connects to the bluetooth, also sets the autoConnect to true.
+     * Sets whether to connect to disconnect from hardware.
      */
-    public void forceConnect() {
-        autoConnect = true;
-        tryConnect();
-    }
-
-    public void forceClose() {
-        autoConnect = false;
-        tryClose();
-    }
-
-    public void setAutoConnect(boolean value) {
-        autoConnect = value;
+    public synchronized void setConnect(boolean connect) {
+        wantConnect = connect;
     }
 
     private void sendConnectionMessage(int message) {
@@ -72,48 +62,28 @@ public class BTCommunicator implements Runnable {
     }
 
     /**
-     * Tries to close the connection.
+     * Checks the current connection status and decides whether we need to change that or not
+     * based on the value of @code{wantConnect}. If the two are different, also notifies the
+     * UI thread of the new status.
+     * @return whether we're connected to hardware or not.
      */
-    private void tryClose() {
-        try {
-            if (btSocket != null) {
-                btSocket.close();
-            }
-            sendConnectionMessage(MainActivity.HW_DISCONNECTED);
-        } catch (IOException e) {
-            Log.d(TAG, "Exception closing BT socket in BT thread: " + e.toString());
-        } finally {
-            btSocket = null;
+    private boolean checkConnectionStatus() {
+        if (wantConnect) {
+            return verifyBTConnected();
+        } else {
+            return verifyBTClosed();
         }
     }
 
     /**
-     * Makes sure the connection is still active.
-     * <p>If connection is lost and auto connect is true, tries to reconnect.</p>
-     * <p>Returns true if at the end we have a connection.</p>
+     * Makes sure that we're connected. If not, tries to connect.
+     * @return whether we're connected or not.
      */
     private boolean verifyBTConnected() {
-        // We're already connected.
         if (btSocket != null && btSocket.isConnected()) {
-            sendConnectionMessage(MainActivity.HW_CONNECTED);
             return true;
         }
 
-        Log.d(TAG, "updateBTStatus is NOT already connected");
-        // Sorry, we're just not connected and don't want to connect either.
-        if (!autoConnect) {
-            sendConnectionMessage(MainActivity.HW_DISCONNECTED);
-            return false;
-        }
-
-        return tryConnect();
-    }
-
-    /**
-     * Tries to establish bluetooth connection and returns true if succeeds.
-     * @return
-     */
-    private boolean tryConnect() {
         sendConnectionMessage(MainActivity.HW_CONNECTING);
         try {
             if (btDevice == null) {
@@ -126,14 +96,30 @@ public class BTCommunicator implements Runnable {
             mmInStream = btSocket.getInputStream();
             mmOutStream = btSocket.getOutputStream();
             sendConnectionMessage(MainActivity.HW_CONNECTED);
+            return true;
         } catch (IOException e) {
-            sendConnectionMessage(MainActivity.HW_DISCONNECTED);
             Log.d(TAG, "Exception creating BT socket in BT thread: " + e.toString());
             btDevice = null;
             return false;
         }
+    }
 
-        return true;
+    /**
+     * Verifies that we're not connected. If we are, then disconnects.
+     * @return whether we're connected or not.
+     */
+    private boolean verifyBTClosed() {
+        try {
+            if (btSocket != null) {
+                btSocket.close();
+            }
+        } catch (IOException e) {
+            Log.d(TAG, "Exception closing BT socket in BT thread: " + e.toString());
+        } finally {
+            sendConnectionMessage(MainActivity.HW_DISCONNECTED);
+            btSocket = null;
+        }
+        return false;
     }
 
     @Override
@@ -141,15 +127,13 @@ public class BTCommunicator implements Runnable {
         byte[] buffer = new byte[256];
         int bytes;
 
-        forceConnect();
-
         while(true) {
-            if (verifyBTConnected()) {
+            if (checkConnectionStatus()) {
                 try {
                     bytes = mmInStream.read(buffer);
                     streamParser.processData(buffer, bytes);
                 } catch (IOException e) {
-                    tryClose();
+                    verifyBTClosed();
                 }
             }
         }
