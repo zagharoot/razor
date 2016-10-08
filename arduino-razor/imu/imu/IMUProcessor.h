@@ -27,6 +27,26 @@
 // - http://www.ngdc.noaa.gov/geomag-web/#declination
 #define LOS_ANGELES_DECLINATION 12.13
 
+typedef struct IMUData {
+  // Acceleration data in millig's.
+  double ax;
+  double ay;
+  double az;
+
+  // Magnetic data in degrees/sec.
+  double gx;
+  double gy;
+  double gz;
+
+  // Space location data in degrees.
+  double yaw;
+  double pitch;
+  double roll;
+
+  // Temperature data in Celsius.
+  double temperature;
+} IMUData;
+
 /**
  * The main wrapper for reading data.
  * Before using, you need to call init();
@@ -134,7 +154,7 @@ typedef struct IMUProcessor {
   }  // init
 
   // Reads and processes sensor data.
-  void readData() {
+  void readData(IMUData* result) {
     // If int_pin is not high, data is not available to read.
     if (my_imu.readByte(MPU9250_ADDRESS, INT_STATUS) & 0x01) {
       my_imu.readAccelData(my_imu.accelCount);  // Read the x/y/z adc values
@@ -231,7 +251,18 @@ typedef struct IMUProcessor {
     my_imu.count = millis();
     my_imu.sumCount = 0;
     my_imu.sum = 0;
-    return true;
+
+    // Update the argument data:
+    result->ax = ax();
+    result->ay = ay();
+    result->az = az();
+    result->gx = gx();
+    result->gy = gy();
+    result->gz = gz();
+    result->yaw = yaw();
+    result->pitch = pitch();
+    result->roll = roll();
+    result->temperature = temperature();
   }
 
     // x acceleration in milligs.

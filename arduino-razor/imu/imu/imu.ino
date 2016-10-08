@@ -12,10 +12,12 @@ void setup()
 }
 
 unsigned long last_time = millis();
- 
+
+IMUData imu_data;
+
 void loop() {
   // Always read the data, so the data can be calculated correctly.
-  processor.readData();
+  processor.readData(&imu_data);
   
   // Print the data only every 2s.
   if (millis() - last_time > 2000) {
