@@ -21,32 +21,12 @@
 
 #include "quaternionFilters.h"
 #include "MPU9250.h"
+#include "sensor.pb.h"
 
 // Declination of Los Angeles (33.990475, -118.440970) is
 //    12.13° E  ± 0.33°  (or 12.3°) on 2016-10-05
 // - http://www.ngdc.noaa.gov/geomag-web/#declination
 #define LOS_ANGELES_DECLINATION 12.13
-
-// TODO: get rid of this in favor of the proto perhaps.
-typedef struct IMUData {
-  // Acceleration data in millig's.
-  double ax;
-  double ay;
-  double az;
-
-  // Magnetic data in degrees/sec.
-  double gx;
-  double gy;
-  double gz;
-
-  // Space location data in degrees.
-  double yaw;
-  double pitch;
-  double roll;
-
-  // Temperature data in Celsius.
-  double temperature;
-} IMUData;
 
 /**
  * The main wrapper for reading data.
@@ -60,8 +40,9 @@ typedef struct IMUProcessor {
   // Whether to calculate yaw/pitch/roll or just raw data.
   // There is overhead to computing the data.
   bool calculate_full_location;
+
   MPU9250 my_imu;
-  double declination;
+  float declination;
 
   // Default constructor.
   IMUProcessor() {
@@ -90,29 +71,29 @@ typedef struct IMUProcessor {
     // Read the WHO_AM_I register, this is a good test of communication
     byte c =  my_imu.readByte(MPU9250_ADDRESS, WHO_AM_I_MPU9250);
     if (debug) {
-      Serial.print("MPU9250 "); Serial.print("I AM "); Serial.print(c, HEX);
-      Serial.print(" I should be "); Serial.println(0x71, HEX);
+      Serial.print(F("MPU9250 ")); Serial.print(F("I AM ")); Serial.print(c, HEX);
+      Serial.print(F(" I should be ")); Serial.println(0x71, HEX);
     }
 
     if (c == 0x71) // WHO_AM_I should always be 0x68
     {
-      if (debug) { Serial.println("MPU9250 is online..."); }
+      if (debug) { Serial.println(F("MPU9250 is online...")); }
 
       // Start by performing self test and reporting values
       my_imu.MPU9250SelfTest(my_imu.SelfTest);
       if (debug) {
-        Serial.print("x-axis self test: acceleration trim within : ");
-        Serial.print(my_imu.SelfTest[0],1); Serial.println("% of factory value");
-        Serial.print("y-axis self test: acceleration trim within : ");
-        Serial.print(my_imu.SelfTest[1],1); Serial.println("% of factory value");
-        Serial.print("z-axis self test: acceleration trim within : ");
-        Serial.print(my_imu.SelfTest[2],1); Serial.println("% of factory value");
-        Serial.print("x-axis self test: gyration trim within : ");
-        Serial.print(my_imu.SelfTest[3],1); Serial.println("% of factory value");
-        Serial.print("y-axis self test: gyration trim within : ");
-        Serial.print(my_imu.SelfTest[4],1); Serial.println("% of factory value");
-        Serial.print("z-axis self test: gyration trim within : ");
-        Serial.print(my_imu.SelfTest[5],1); Serial.println("% of factory value");
+        Serial.print(F("x-axis self test: acceleration trim within : "));
+        Serial.print(my_imu.SelfTest[0],1); Serial.println(F("% of factory value"));
+        Serial.print(F("y-axis self test: acceleration trim within : "));
+        Serial.print(my_imu.SelfTest[1],1); Serial.println(F("% of factory value"));
+        Serial.print(F("z-axis self test: acceleration trim within : "));
+        Serial.print(my_imu.SelfTest[2],1); Serial.println(F("% of factory value"));
+        Serial.print(F("x-axis self test: gyration trim within : "));
+        Serial.print(my_imu.SelfTest[3],1); Serial.println(F("% of factory value"));
+        Serial.print(F("y-axis self test: gyration trim within : "));
+        Serial.print(my_imu.SelfTest[4],1); Serial.println(F("% of factory value"));
+        Serial.print(F("z-axis self test: gyration trim within : "));
+        Serial.print(my_imu.SelfTest[5],1); Serial.println(F("% of factory value"));
       }
       
       // Calibrate gyro and accelerometers, load biases in bias registers
@@ -122,33 +103,33 @@ typedef struct IMUProcessor {
 
       // Initialize device for active mode read of acclerometer, gyroscope, and
       // temperature
-      if (debug) { Serial.println("MPU9250 initialized for active data mode...."); }
+      if (debug) { Serial.println(F("MPU9250 initialized for active data mode....")); }
 
       // Read the WHO_AM_I register of the magnetometer, this is a good test of
       // communication
       byte d = my_imu.readByte(AK8963_ADDRESS, WHO_AM_I_AK8963);
       if (debug) {
-        Serial.print("AK8963 "); Serial.print("I AM "); Serial.print(d, HEX);
-        Serial.print(" I should be "); Serial.println(0x48, HEX);
+        Serial.print(F("AK8963 ")); Serial.print(F("I AM ")); Serial.print(d, HEX);
+        Serial.print(F(" I should be ")); Serial.println(0x48, HEX);
       }
       
       // Get magnetometer calibration from AK8963 ROM
       my_imu.initAK8963(my_imu.magCalibration);
       // Initialize device for active mode read of magnetometer
-      if (debug) { Serial.println("AK8963 initialized for active data mode...."); }
+      if (debug) { Serial.println(F("AK8963 initialized for active data mode....")); }
       
       if (debug) {
-        Serial.println("Calibration values: ");
-        Serial.print("X-Axis sensitivity adjustment value ");
+        Serial.println(F("Calibration values: "));
+        Serial.print(F("X-Axis sensitivity adjustment value "));
         Serial.println(my_imu.magCalibration[0], 2);
-        Serial.print("Y-Axis sensitivity adjustment value ");
+        Serial.print(F("Y-Axis sensitivity adjustment value "));
         Serial.println(my_imu.magCalibration[1], 2);
-        Serial.print("Z-Axis sensitivity adjustment value ");
+        Serial.print(F("Z-Axis sensitivity adjustment value "));
         Serial.println(my_imu.magCalibration[2], 2);
       }
     } // if (c == 0x71)
     else {
-      Serial.print("Could not connect to MPU9250: 0x");
+      Serial.print(F("Could not connect to MPU9250: 0x"));
       Serial.println(c, HEX);
       while(1) ; // Loop forever if communication doesn't happen
     }
@@ -267,82 +248,82 @@ typedef struct IMUProcessor {
   }
 
     // x acceleration in milligs.
-  double ax() {
-    return my_imu.ax * 1000.;
+  int ax() {
+    return (int32_t) (my_imu.ax * 1000);
   }
 
   // y acceleration in milligs.
-  double ay() {
-    return my_imu.ay * 1000.;
+  int ay() {
+    return (int) (my_imu.ay * 1000);
   }
 
   // z acceleration in milligs.
-  double az() {
-    return my_imu.az * 1000.;
+  int az() {
+    return (int) (my_imu.az * 1000);
   }
 
   // gyro x in degree/sec.
-  double gyrox() {
-    return my_imu.gx;
+  int gyrox() {
+    return (int) my_imu.gx;
   }
 
   // gyro y in degree/sec.
-  double gyroy() {
-    return my_imu.gy;
+  int gyroy() {
+    return (int) my_imu.gy;
   }
 
   // gyro z in degree/sec.
-  double gyroz() {
-    return my_imu.gz;
+  int gyroz() {
+    return (int) my_imu.gz;
   }
 
   // Magnet x in degree/sec.
-  double magx() {
-    return my_imu.mx;
+  int magx() {
+    return (int) my_imu.mx;
   }
 
   // Magnet y in degree/sec.
-  double magy() {
-    return my_imu.my;
+  int magy() {
+    return (int) my_imu.my;
   }
 
   // Magnet z in degree/sec.
-  double magz() {
-    return my_imu.mz;
+  int magz() {
+    return (int) my_imu.mz;
   }
 
   // Temperature in celsius.
-  double temperature() {
-    return my_imu.temperature;
+  int temperature() {
+    return (int) my_imu.temperature;
   }
 
-  double yaw() {
+  float yaw() {
     return my_imu.yaw;
   }
 
-  double pitch() {
+  float pitch() {
     return my_imu.pitch;
   }
 
-  double roll() {
+  float roll() {
     return my_imu.roll;
   }
 
   void print() {
-    Serial.println("..........");
-    Serial.print("ax: "); Serial.print(ax(), 1);
-    Serial.print("\tay: "); Serial.print(ay(), 1);
-    Serial.print("\taz: "); Serial.println(az(), 1);
+    Serial.println(F(".........."));
+    Serial.print(F("ax: ")); Serial.print(ax());
+    Serial.print(F("\tay: ")); Serial.print(ay());
+    Serial.print(F("\taz: ")); Serial.println(az());
 
-    Serial.print("gx: "); Serial.print(magx(), 1);
-    Serial.print("\tgy: "); Serial.print(magy(), 1);
-    Serial.print("\tgz: "); Serial.println(magz(), 1);
+    Serial.print(F("gx: ")); Serial.print(magx());
+    Serial.print(F("\tgy: ")); Serial.print(magy());
+    Serial.print(F("\tgz: ")); Serial.println(magz());
 
-    Serial.print("yaw: "); Serial.print(yaw(), 1);
-    Serial.print("\tpitch: "); Serial.print(pitch(), 1);
-    Serial.print("\troll: "); Serial.println(roll(), 1);
+    Serial.print(F("yaw: ")); Serial.print(yaw(), 1);
+    Serial.print(F("\tpitch: ")); Serial.print(pitch(), 1);
+    Serial.print(F("\troll: ")); Serial.println(roll(), 1);
 
-    Serial.print("temperature: "); Serial.println(temperature());
+    Serial.print(F("temperature: ")); Serial.println(temperature());
     Serial.println("");
   }
 }IMUProcessor;
