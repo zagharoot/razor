@@ -22,7 +22,7 @@ public class SensorDataUtils {
     private static String toString(FootSensorData data) {
         IMUData imu = data.getImuData();
         return String.format(
-                "{%1$.2f,%2$.2f,%3$.2f,%4$.2f,%5$.2f,%6$.2f,%7$.2f,%8$.2f,%9$.2f,%10$.2f}",
+                "{%1$d,%2$d,%3$d,%4$d,%5$d,%6$d,%7$.2f,%8$.2f,%9$.2f,%10$d}",
                 imu.getAx(), imu.getAy(), imu.getAz(), imu.getGx(), imu.getGy(), imu.getGz(),
                 imu.getYaw(), imu.getPitch(), imu.getRoll(), imu.getTemperature());
     }

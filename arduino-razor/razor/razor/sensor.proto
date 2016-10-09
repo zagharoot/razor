@@ -1,0 +1,50 @@
+syntax = "proto2";
+
+// Note: The proto definitions on the arduino side are compiled using 'required' tag because
+//       nanopb didn't support 'optional'.
+//
+// Note: DO NOT use double in the proto definitions because it's not supported fully in arduino.
+//       Instead, use float.
+//
+// To compile this proto for arduino, use the following command in the same folder:
+// protoc --plugin=protoc-gen-nanopb=[path to nanopb root]/generator/protoc-gen-nanopb --nanopb_out=. sensor.proto
+//
+// The followings are needed for this proto to be used in Arduino:
+// - nanopb: You can download from github.
+// - protobuf: Download from github, then install python support using this command:
+//             'python setup.py install'
+// - Copy pb, pb-common, pb-encode, pb-decode header(.h) and source (.c) files into Arduino libraries.
+
+
+// Data collected from the IMU hardware.
+// This includes accelerometer, gyro, and temperature data.
+message IMUData {
+    // Acceleration data in millig's.
+    required int32 ax = 1;
+    required int32 ay = 2;
+    required int32 az = 3;
+
+    // Magnetic data in degrees/sec.
+    required int32 gx = 4;
+    required int32 gy = 5;
+    required int32 gz = 6;
+
+    // Space location data in degrees.
+    required float yaw = 7;
+    required float pitch = 8;
+    required float roll = 9;
+
+    // Temperature data in Celsius.
+    required int32 temperature = 10;
+}
+
+// All the sensors coming from one foot.
+message FootSensorData {
+    required IMUData imu_data = 1;
+}
+
+// All the sensor data.
+message SensorData {
+    required FootSensorData left = 1;
+    required FootSensorData right = 2;
+}

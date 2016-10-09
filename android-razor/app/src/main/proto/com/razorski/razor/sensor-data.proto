@@ -13,14 +13,14 @@ option java_multiple_files = true;
 // This includes accelerometer, gyro, and temperature data.
 message IMUData {
     // Acceleration data in millig's.
-    optional float ax = 1;
-    optional float ay = 2;
-    optional float az = 3;
+    optional int32 ax = 1;
+    optional int32 ay = 2;
+    optional int32 az = 3;
 
     // Magnetic data in degrees/sec.
-    optional float gx = 4;
-    optional float gy = 5;
-    optional float gz = 6;
+    optional int32 gx = 4;
+    optional int32 gy = 5;
+    optional int32 gz = 6;
 
     // Space location data in degrees.
     optional float yaw = 7;
@@ -28,7 +28,7 @@ message IMUData {
     optional float roll = 9;
 
     // Temperature data in Celsius.
-    optional float temperature = 10;
+    optional int32 temperature = 10;
 }
 
 // All the sensors coming from one foot.
