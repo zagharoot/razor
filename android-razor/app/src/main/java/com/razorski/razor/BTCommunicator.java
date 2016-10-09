@@ -124,14 +124,10 @@ public class BTCommunicator implements Runnable {
 
     @Override
     public void run() {
-        byte[] buffer = new byte[256];
-        int bytes;
-
         while(true) {
             if (checkConnectionStatus()) {
                 try {
-                    bytes = mmInStream.read(buffer);
-                    streamParser.processData(buffer, bytes);
+                    streamParser.readNext(mmInStream);
                 } catch (IOException e) {
                     verifyBTClosed();
                 }

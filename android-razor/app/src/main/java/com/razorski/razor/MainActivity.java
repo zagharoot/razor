@@ -83,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         dataManager = new SensorDataManager(dataHandler);
-        streamParser = new SensorDataTextParser(dataManager);
+        streamParser = new SensorDataProtoParser(dataManager);
 
         btCommunicator = new BTCommunicator(MY_UUID, BT_ADDRESS, streamParser, dataHandler);
 
