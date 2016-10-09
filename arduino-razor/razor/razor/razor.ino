@@ -6,23 +6,21 @@
 // So we can communicate to the Bluetooth module.
 #include <SoftwareSerial.h>
 // Make sure you put a symlink to the IMUProcessor.h in the Arduino libraries for this to work.
-#include <IMUProcessor.h>
+#include "IMUProcessor.h"
+#include "sensor.pb.h"
+#include "pb_encode.h"
 
 // BT is connected to serial 10 and 11. 
 SoftwareSerial mySerial(10, 11); // RX, TX
 
 IMUProcessor imu_processor;
-IMUData imu_data;
+SensorData sensor_data = SensorData_init_zero;
 
 void setup() {
   // To write any messages to the serial for debugging etc.
   Serial.begin(38400);
 
-  while (!Serial) {
-    ; // wait for serial port to connect. Needed for native USB port only
-  }
-
-  Serial.println("Welcome to Razor!");
+  Serial.println(F("Welcome to Razor!"));
 
   // Set the data rate for the SoftwareSerial port. Bluetooth module works on 9600, so
   // don't change this.
@@ -31,38 +29,25 @@ void setup() {
   imu_processor.init();  
 }
 
-// Sensor data coming from one foot.
-struct FootSensorData {
-  IMUData imu_data;
-
-  String toString() {
-    return String("{") + imu_data.toString() + "}";
-  }
-};
-
-// A struct to hold all the sensor data.
-struct SensorData {
-  FootSensorData left;
-  FootSensorData right;
-
-  String toString() {
-    return String("{") + left.toString() + "," + right.toString() + "}";
-  }
-};
-
-SensorData sensor_data;
-
 unsigned long last_time = millis();
+
 void loop() {
+  uint8_t buffer[160];
+  
   // Always read the data, so the data can be calculated correctly.
   imu_processor.readData(&(sensor_data.left.imu_data));
   
   // Print the data only every 2s.
   if (millis() - last_time > 2000) {
-//    mySerial.println(sensor.toString());
-//    Serial.println(sensor_data.left.imu_data.toString());
-    Serial.println(sizeof(IMUData));
-    mySerial.println(sensor_data.left.imu_data.toString());
+    // Things we need to send protos over bluetooth.
+    pb_ostream_t stream = pb_ostream_from_buffer(buffer, sizeof(buffer));
+    bool status = pb_encode_delimited(&stream, SensorData_fields, &sensor_data);
+    if (!status) {
+      Serial.println(F("Error encoding"));
+    } else {
+//      Serial.print(F("Wrote bytes: ")); Serial.println(stream.bytes_written);
+      mySerial.write(buffer, stream.bytes_written);
+    }
     last_time = millis();
   }
 }
