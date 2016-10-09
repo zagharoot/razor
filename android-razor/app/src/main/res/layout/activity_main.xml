@@ -27,17 +27,18 @@
         android:layout_height="wrap_content"
         android:text="Sensor values"
         android:layout_marginStart="14dp"
+        android:layout_marginTop="63dp"
         android:layout_below="@+id/progressBar"
         android:layout_alignParentStart="true"
-        android:layout_marginTop="23dp" />
+        android:layout_toStartOf="@+id/connectionStatus"
+        android:layout_alignParentEnd="true" />
 
     <CheckBox
         android:text="Disconnected"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/connectionStatus"
-        android:layout_alignBaseline="@+id/sensorValueText"
-        android:layout_alignBottom="@+id/sensorValueText"
+        android:layout_below="@+id/progressBar"
         android:layout_alignParentEnd="true"
-        android:layout_marginEnd="10dp" />
+        android:layout_marginEnd="14dp" />
 </RelativeLayout>

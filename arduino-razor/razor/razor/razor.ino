@@ -38,7 +38,7 @@ void loop() {
   imu_processor.readData(&(sensor_data.left.imu_data));
   
   // Print the data only every 2s.
-  if (millis() - last_time > 2000) {
+  if (millis() - last_time > 500) {
     // Things we need to send protos over bluetooth.
     pb_ostream_t stream = pb_ostream_from_buffer(buffer, sizeof(buffer));
     bool status = pb_encode_delimited(&stream, SensorData_fields, &sensor_data);
