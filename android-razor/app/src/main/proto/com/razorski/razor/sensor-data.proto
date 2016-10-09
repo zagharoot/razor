@@ -1,15 +1,43 @@
-syntax = "proto3";
+syntax = "proto2";
 
 option java_package = "com.razorski.razor";
 option java_multiple_files = true;
 
-message FootData {
-    int32 tilt = 1;
-    int32 front_force = 2;
-    int32 velocity = 3;
+// Note: The proto definitions on the arduino side are compiled using 'required' tag because
+//       nanopb didn't support 'optional'.
+//
+// Note: DO NOT use double in the proto definitions because it's not supported fully in arduino.
+//       Instead, use float.
+
+// Data collected from the IMU hardware.
+// This includes accelerometer, gyro, and temperature data.
+message IMUData {
+    // Acceleration data in millig's.
+    optional float ax = 1;
+    optional float ay = 2;
+    optional float az = 3;
+
+    // Magnetic data in degrees/sec.
+    optional float gx = 4;
+    optional float gy = 5;
+    optional float gz = 6;
+
+    // Space location data in degrees.
+    optional float yaw = 7;
+    optional float pitch = 8;
+    optional float roll = 9;
+
+    // Temperature data in Celsius.
+    optional float temperature = 10;
 }
 
+// All the sensors coming from one foot.
+message FootSensorData {
+    optional IMUData imu_data = 1;
+}
+
+// All the sensor data.
 message SensorData {
-    FootData right_foot = 1;
-    FootData left_foot = 2;
+    optional FootSensorData left = 1;
+    optional FootSensorData right = 2;
 }
