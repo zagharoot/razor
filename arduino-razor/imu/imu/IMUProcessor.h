@@ -27,6 +27,7 @@
 // - http://www.ngdc.noaa.gov/geomag-web/#declination
 #define LOS_ANGELES_DECLINATION 12.13
 
+// TODO: get rid of this in favor of the proto perhaps.
 typedef struct IMUData {
   // Acceleration data in millig's.
   double ax;
@@ -256,9 +257,9 @@ typedef struct IMUProcessor {
     result->ax = ax();
     result->ay = ay();
     result->az = az();
-    result->gx = gx();
-    result->gy = gy();
-    result->gz = gz();
+    result->gx = magx();
+    result->gy = magy();
+    result->gz = magz();
     result->yaw = yaw();
     result->pitch = pitch();
     result->roll = roll();
