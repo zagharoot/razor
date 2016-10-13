@@ -20,6 +20,9 @@ public abstract class SensorDataStreamParser {
     public void readNext(InputStream inputStream)  throws IOException {
         SensorData data = readNextInternal(inputStream);
         if (data != null) {
+            // Add timestamp to the data.
+            data = data.toBuilder().setTimestampMsec(System.currentTimeMillis()).build();
+
             dataManager.addData(data);
         }
     }
