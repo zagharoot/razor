@@ -25,9 +25,10 @@ public class SensorDataUtils {
         return String.format(
                 "A: {%1$d,%2$d,%3$d}\n" +
                 "G: {%4$d,%5$d,%6$d}\n" +
-                "P: {%7$.2f,%8$.2f,%9$.2f}\n" + "T: {%10$d}",
+                "P: {%7$.2f,%8$.2f,%9$.2f}\n" + "T: {%10$d}\n" +
+                "Pr: {%11$d}",
                 imu.getAx(), imu.getAy(), imu.getAz(), imu.getGx(), imu.getGy(), imu.getGz(),
-                imu.getYaw(), imu.getPitch(), imu.getRoll(), imu.getTemperature());
+                imu.getYaw(), imu.getPitch(), imu.getRoll(), imu.getTemperature(), data.getPressureFront());
 
 /*        return String.format(
                 "{%1$d,%2$d,%3$d,%4$d,%5$d,%6$d,%7$.2f,%8$.2f,%9$.2f,%10$d}",

@@ -16,6 +16,9 @@ SoftwareSerial mySerial(10, 11); // RX, TX
 IMUProcessor imu_processor;
 SensorData sensor_data = SensorData_init_zero;
 
+// The pin that pressure sensor is connected to.
+const int kPressureFrontPin = A3;
+
 void setup() {
   // To write any messages to the serial for debugging etc.
   Serial.begin(38400);
@@ -39,6 +42,9 @@ void loop() {
   
   // Print the data only every 2s.
   if (millis() - last_time > 500) {
+    // Read Analog sensor data:
+    sensor_data.left.pressure_front = analogRead(kPressureFrontPin);
+
     // Things we need to send protos over bluetooth.
     pb_ostream_t stream = pb_ostream_from_buffer(buffer, sizeof(buffer));
     bool status = pb_encode_delimited(&stream, SensorData_fields, &sensor_data);

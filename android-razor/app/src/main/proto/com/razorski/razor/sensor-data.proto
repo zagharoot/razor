@@ -34,10 +34,17 @@ message IMUData {
 // All the sensors coming from one foot.
 message FootSensorData {
     optional IMUData imu_data = 1;
+    // Value of the pressure sensor [0, 1024].
+    // The higher the value, the more pressure on the sensor.
+    optional int32 pressure_front = 2;
 }
 
 // All the sensor data.
 message SensorData {
     optional FootSensorData left = 1;
     optional FootSensorData right = 2;
+
+    // These tags are reserved for Android-only and will be populated on the phone.
+    // Reserved numbers start at 101.
+    optional int64 timestamp_msec = 101;
 }
