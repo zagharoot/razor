@@ -109,15 +109,16 @@ public class BTCommunicator implements Runnable {
      * @return whether we're connected or not.
      */
     private boolean verifyBTClosed() {
-        try {
-            if (btSocket != null) {
+        if (btSocket != null) {
+            try {
                 btSocket.close();
+                btSocket = null;
+            } catch (IOException e) {
+                Log.d(TAG, "Exception closing BT socket in BT thread: " + e.toString());
+            } finally {
+                sendConnectionMessage(MainActivity.HW_DISCONNECTED);
+                btSocket = null;
             }
-        } catch (IOException e) {
-            Log.d(TAG, "Exception closing BT socket in BT thread: " + e.toString());
-        } finally {
-            sendConnectionMessage(MainActivity.HW_DISCONNECTED);
-            btSocket = null;
         }
         return false;
     }
