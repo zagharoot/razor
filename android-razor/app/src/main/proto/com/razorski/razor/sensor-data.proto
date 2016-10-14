@@ -39,6 +39,26 @@ message FootSensorData {
     optional int32 pressure_front = 2;
 }
 
+// Location data provided by GPS.
+// This mimics the @code{Location} class.
+message LocationData {
+    // Latitude, in degrees.
+    optional double latitude = 1;
+    // Longitude, in degrees.
+    optional double longitude = 2;
+    // Speed on the ground in meters/second.
+    optional float speed = 3;
+    // The altitude, in meters above the WGS 84 reference ellipsoid.
+    optional double altitude = 4;
+    // Estimated accuracy of this location, in meters.
+    optional float accuracy = 5;
+}
+
+// All the sensor data collected from the phone.
+message PhoneData {
+    optional LocationData location_data = 1;
+}
+
 // All the sensor data.
 message SensorData {
     optional FootSensorData left = 1;
@@ -47,4 +67,5 @@ message SensorData {
     // These tags are reserved for Android-only and will be populated on the phone.
     // Reserved numbers start at 101.
     optional int64 timestamp_msec = 101;
+    optional PhoneData phone_data = 102;
 }

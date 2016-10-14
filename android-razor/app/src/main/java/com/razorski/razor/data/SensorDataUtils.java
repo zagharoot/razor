@@ -2,6 +2,7 @@ package com.razorski.razor.data;
 
 import com.razorski.razor.FootSensorData;
 import com.razorski.razor.IMUData;
+import com.razorski.razor.LocationData;
 import com.razorski.razor.SensorData;
 
 /**
@@ -17,7 +18,13 @@ public class SensorDataUtils {
      */
     public static String toString(SensorData data) {
 //        return "{" + toString(data.getLeft()) + "," + toString(data.getRight()) + "}";
-        return toString(data.getLeft());
+        LocationData loc = data.getPhoneData().getLocationData();
+        return toString(data.getLeft()) + "\n\n" +
+                String.format("Loc: {%1.3f,%2.3f,%3.3f,%4.3f,%5.3f}",
+                        loc.getLatitude(), loc.getLongitude(), loc.getSpeed(), loc.getAltitude(),
+                        loc.getAccuracy());
+
+
     }
 
     private static String toString(FootSensorData data) {
@@ -26,9 +33,10 @@ public class SensorDataUtils {
                 "A: {%1$d,%2$d,%3$d}\n" +
                 "G: {%4$d,%5$d,%6$d}\n" +
                 "P: {%7$.2f,%8$.2f,%9$.2f}\n" + "T: {%10$d}\n" +
-                "Pr: {%11$d}",
+                "Pr: {%11$d}\n",
                 imu.getAx(), imu.getAy(), imu.getAz(), imu.getGx(), imu.getGy(), imu.getGz(),
-                imu.getYaw(), imu.getPitch(), imu.getRoll(), imu.getTemperature(), data.getPressureFront());
+                imu.getYaw(), imu.getPitch(), imu.getRoll(), imu.getTemperature(),
+                data.getPressureFront());
 
 /*        return String.format(
                 "{%1$d,%2$d,%3$d,%4$d,%5$d,%6$d,%7$.2f,%8$.2f,%9$.2f,%10$d}",

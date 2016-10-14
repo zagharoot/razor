@@ -1,7 +1,9 @@
 package com.razorski.razor;
 
+import android.Manifest;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.CheckBox;
@@ -29,16 +31,17 @@ public class MainActivity extends AppCompatActivity {
     private Handler dataHandler;
 
     // Pointer to objects that get and process data in other threads.
-    SensorDataManager dataManager;
-    Thread dataManagerThread;
-    BTCommunicator btCommunicator;
-    Thread btThread;
-    SensorDataStreamParser streamParser;
+    private SensorDataManager dataManager;
+    private Thread dataManagerThread;
+    private BTCommunicator btCommunicator;
+    private Thread btThread;
+    private SensorDataStreamParser streamParser;
+    private PhoneSensorCollector phoneSensorCollector;
 
     // Pointer to my UI elements.
-    TextView sensorValueTextView;
-    ProgressBar progressBar;
-    CheckBox connectionCheckBox;
+    private TextView sensorValueTextView;
+    private ProgressBar progressBar;
+    private CheckBox connectionCheckBox;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,8 +84,11 @@ public class MainActivity extends AppCompatActivity {
         };
         setContentView(R.layout.activity_main);
 
+        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 5);
 
-        dataManager = new SensorDataManager(dataHandler);
+
+        phoneSensorCollector = new PhoneSensorCollector(getBaseContext());
+        dataManager = new SensorDataManager(dataHandler, phoneSensorCollector);
         streamParser = new SensorDataProtoParser(dataManager);
 
         btCommunicator = new BTCommunicator(MY_UUID, BT_ADDRESS, streamParser, dataHandler);

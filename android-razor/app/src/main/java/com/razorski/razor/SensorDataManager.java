@@ -17,8 +17,11 @@ public class SensorDataManager implements Runnable {
     // Handler that runs in this thread and receives proto data from the communication thread.
     private Handler myHandler;
 
-    public SensorDataManager(Handler parentHandler_) {
+    private PhoneSensorCollector phoneSensorCollector;
+
+    public SensorDataManager(Handler parentHandler_, PhoneSensorCollector phoneSensorCollector_) {
         parentHandler = parentHandler_;
+        phoneSensorCollector = phoneSensorCollector_;
     }
 
     /**
@@ -41,6 +44,7 @@ public class SensorDataManager implements Runnable {
 
                         // Things we want to do with the message:
                         // Right now, we just pass it along to the main UI but later we'll do more.
+                        data.toBuilder().setPhoneData(phoneSensorCollector.readData());
                         parentHandler.obtainMessage(MainActivity.RECEIVED_DATA, data)
                                 .sendToTarget();
                 }
