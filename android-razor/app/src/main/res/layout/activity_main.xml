@@ -11,16 +11,6 @@
     android:paddingTop="0dp"
     tools:context="com.razorski.razor.MainActivity">
 
-    <ProgressBar
-        style="@android:style/Widget.DeviceDefault.Light.ProgressBar.Horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/progressBar"
-        android:indeterminate="true"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentEnd="true" />
-
     <TextView
         android:id="@+id/sensorValueText"
         android:layout_width="wrap_content"
@@ -41,4 +31,14 @@
         android:layout_below="@+id/progressBar"
         android:layout_alignParentEnd="true"
         android:layout_marginEnd="14dp" />
+
+    <ProgressBar
+        style="@android:style/Widget.DeviceDefault.Light.ProgressBar.Horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/progressBar"
+        android:indeterminate="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
+        android:visibility="invisible" />
 </RelativeLayout>

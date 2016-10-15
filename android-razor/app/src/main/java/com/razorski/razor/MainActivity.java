@@ -1,9 +1,10 @@
 package com.razorski.razor;
 
 import android.Manifest;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.CheckBox;
@@ -14,6 +15,12 @@ import com.razorski.razor.data.SensorDataUtils;
 
 import java.util.UUID;
 
+import permissions.dispatcher.NeedsPermission;
+import permissions.dispatcher.OnShowRationale;
+import permissions.dispatcher.PermissionRequest;
+import permissions.dispatcher.RuntimePermissions;
+
+@RuntimePermissions
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = MainActivity.class.getName();
 
@@ -43,6 +50,40 @@ public class MainActivity extends AppCompatActivity {
     private ProgressBar progressBar;
     private CheckBox connectionCheckBox;
 
+    /**
+     * This code runs once it is verified that the program has permission to all its resources.
+     * The annotation makes sure the permissions are requested if not already.
+     * This code will not run if the user denies permission.
+     */
+    @NeedsPermission({Manifest.permission.ACCESS_FINE_LOCATION,
+                      Manifest.permission.BLUETOOTH_ADMIN})
+    protected void checkPermissionAndRun() {
+        // Set up the class for collecting data off of the phone.
+        phoneSensorCollector = new PhoneSensorCollector(getBaseContext());
+
+        dataManager = new SensorDataManager(dataHandler, phoneSensorCollector);
+        streamParser = new SensorDataProtoParser(dataManager);
+
+        // Start the data manager thread. This doesn't do much on its own until the bluetooth thread
+        // is also running.
+        dataManagerThread = new Thread(dataManager);
+        dataManagerThread.start();
+
+        phoneSensorCollector.init();
+        btCommunicator = new BTCommunicator(MY_UUID, BT_ADDRESS, streamParser, dataHandler);
+        // Clicking on the connected checkbox will toggle connect/disconnect from HW.
+        connectionCheckBox.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                btCommunicator.setConnect(connectionCheckBox.isChecked());
+            }
+        });
+
+        btThread = new Thread(btCommunicator);
+        btThread.start();
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,12 +93,11 @@ public class MainActivity extends AppCompatActivity {
                 switch (message.what) {
                     case RECEIVED_DATA:
                         SensorData data = (SensorData) message.obj;
-//                        Log.d(TAG, "Received data in UI thread:" + SensorDataUtils.toString(data));
                         sensorValueTextView.setText(SensorDataUtils.toString(data));
                         break;
                     case HW_CONNECTED:
                         if (!connectionCheckBox.getText().equals("Connected")) {
-                            progressBar.setVisibility(View.GONE);
+                            progressBar.setVisibility(View.INVISIBLE);
                             connectionCheckBox.setText("Connected");
                             connectionCheckBox.setChecked(true);
                         }
@@ -72,7 +112,7 @@ public class MainActivity extends AppCompatActivity {
                         break;
                     case HW_DISCONNECTED:
                         if (!connectionCheckBox.getText().equals("Disconnected")) {
-                            progressBar.setVisibility(View.GONE);
+                            progressBar.setVisibility(View.INVISIBLE);
                             connectionCheckBox.setText("Disconnected");
                             connectionCheckBox.setChecked(false);
                         }
@@ -84,31 +124,39 @@ public class MainActivity extends AppCompatActivity {
         };
         setContentView(R.layout.activity_main);
 
-        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 5);
-
-
-        phoneSensorCollector = new PhoneSensorCollector(getBaseContext());
-        dataManager = new SensorDataManager(dataHandler, phoneSensorCollector);
-        streamParser = new SensorDataProtoParser(dataManager);
-
-        btCommunicator = new BTCommunicator(MY_UUID, BT_ADDRESS, streamParser, dataHandler);
-
-        dataManagerThread = new Thread(dataManager);
-        btThread = new Thread(btCommunicator);
-        dataManagerThread.start();
-        btThread.start();
-
+        // Assign views to variables.
         sensorValueTextView = (TextView) findViewById(R.id.sensorValueText);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
         connectionCheckBox = (CheckBox) findViewById(R.id.connectionStatus);
 
-        // Clicking on the connected checkbox will toggle connect/disconnect from HW.
-        connectionCheckBox.setOnClickListener(new View.OnClickListener() {
+        // Make sure we have permission, and once we're clear, call checkPermissionAndRun().
+        MainActivityPermissionsDispatcher.checkPermissionAndRunWithCheck(this);
+    }
 
+    // Delegates the permission handling to generated method.
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                                           int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        MainActivityPermissionsDispatcher.onRequestPermissionsResult(this, requestCode,
+                grantResults);
+    }
+
+    @OnShowRationale({Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.BLUETOOTH_ADMIN})
+    void showRationaleForPermissions(final PermissionRequest request) {
+        new AlertDialog.Builder(this)
+                .setMessage("Razor cannot work without having access to location and bluetooth.")
+                .setPositiveButton("Allow", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        request.proceed();
+                    }
+                }).setNegativeButton("Deny", new DialogInterface.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                btCommunicator.setConnect(connectionCheckBox.isChecked());
+            public void onClick(DialogInterface dialog, int which) {
+                request.cancel();
             }
-        });
+        }).show();
     }
 }

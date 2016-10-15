@@ -44,7 +44,8 @@ public class SensorDataManager implements Runnable {
 
                         // Things we want to do with the message:
                         // Right now, we just pass it along to the main UI but later we'll do more.
-                        data.toBuilder().setPhoneData(phoneSensorCollector.readData());
+                        data = data.toBuilder().setPhoneData(phoneSensorCollector.readData())
+                                .build();
                         parentHandler.obtainMessage(MainActivity.RECEIVED_DATA, data)
                                 .sendToTarget();
                 }
