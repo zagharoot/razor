@@ -8,6 +8,7 @@
 #include "IMUProcessor.h"
 #include "sensor.pb.h"
 #include "pb_encode.h"
+#include "vcc.h"
 
 // Uncomment one of these lines based on what board you want to use the code with:
 //  #define BOARD_UNO
