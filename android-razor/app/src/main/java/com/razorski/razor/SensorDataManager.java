@@ -55,4 +55,12 @@ public class SensorDataManager implements Runnable {
 
         Looper.loop();
     }
+
+    public void startRecordingSession() {
+
+    }
+
+    public void stopRecordingSession() {
+
+    }
 }

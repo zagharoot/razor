@@ -70,3 +70,22 @@ message SensorData {
     optional int64 timestamp_msec = 101;
     optional PhoneData phone_data = 102;
 }
+
+// A series of sensor data that should be measured together (e.g. a run from top of the hill
+// to the bottom.
+// This distinction is logical, meaning it is regardless of how many times we record/pause
+// data collection in the app.
+message Run {
+    optional int64 start_timestamp_msec = 1;
+    optional int64 end_timestamp_msec = 2;
+
+    repeated SensorData sensor_data = 3;
+}
+
+
+message RecordSession {
+    optional int64 start_timestamp_msec = 1;
+    optional int64 end_timestamp_msec = 2;
+
+
+}

@@ -8,9 +8,13 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ProgressBar;
+import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.facebook.FacebookSdk;
 import com.razorski.razor.data.SensorDataUtils;
 
 import java.util.UUID;
@@ -49,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView sensorValueTextView;
     private ProgressBar progressBar;
     private CheckBox connectionCheckBox;
+    private Switch recordSwitch;
 
     /**
      * This code runs once it is verified that the program has permission to all its resources.
@@ -100,6 +105,7 @@ public class MainActivity extends AppCompatActivity {
                             progressBar.setVisibility(View.INVISIBLE);
                             connectionCheckBox.setText("Connected");
                             connectionCheckBox.setChecked(true);
+                            recordSwitch.setVisibility(View.VISIBLE);
                         }
                         break;
                     case HW_CONNECTING:
@@ -108,6 +114,8 @@ public class MainActivity extends AppCompatActivity {
                             progressBar.animate();
                             connectionCheckBox.setText("Connecting...");
                             connectionCheckBox.setChecked(false);
+                            recordSwitch.setChecked(false);
+                            recordSwitch.setVisibility(View.INVISIBLE);
                         }
                         break;
                     case HW_DISCONNECTED:
@@ -115,6 +123,8 @@ public class MainActivity extends AppCompatActivity {
                             progressBar.setVisibility(View.INVISIBLE);
                             connectionCheckBox.setText("Disconnected");
                             connectionCheckBox.setChecked(false);
+                            recordSwitch.setChecked(false);
+                            recordSwitch.setVisibility(View.INVISIBLE);
                         }
                         break;
                     default:
@@ -125,12 +135,44 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         // Assign views to variables.
+        createViewVariables();
+
+        // Initialize the SDK before executing any other operations,
+        FacebookSdk.sdkInitialize(getApplicationContext());
+
+        // Make sure we have permission, and once we're clear, call checkPermissionAndRun().
+        MainActivityPermissionsDispatcher.checkPermissionAndRunWithCheck(this);
+    }
+
+    void startRecording() {
+        Toast.makeText(getBaseContext(), "Starting to record", Toast.LENGTH_SHORT).show();
+        dataManager.startRecordingSession();
+    }
+
+    void stopRecording() {
+        Toast.makeText(getBaseContext(), "Stopped recordring", Toast.LENGTH_SHORT).show();
+        dataManager.stopRecordingSession();
+    }
+
+    /**
+     * initializes the view variables in this activity.
+     */
+    private void createViewVariables() {
         sensorValueTextView = (TextView) findViewById(R.id.sensorValueText);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
         connectionCheckBox = (CheckBox) findViewById(R.id.connectionStatus);
 
-        // Make sure we have permission, and once we're clear, call checkPermissionAndRun().
-        MainActivityPermissionsDispatcher.checkPermissionAndRunWithCheck(this);
+        recordSwitch = (Switch) findViewById(R.id.record_switch);
+        recordSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    startRecording();
+                } else {
+                    stopRecording();
+                }
+            }
+        });
     }
 
     // Delegates the permission handling to generated method.
