@@ -2,8 +2,10 @@ package com.razorski.razor;
 
 import android.Manifest;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -11,16 +13,29 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.toolbox.NetworkImageView;
+import com.facebook.AccessToken;
 import com.facebook.FacebookSdk;
+import com.facebook.Profile;
+import com.facebook.ProfileTracker;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FacebookAuthProvider;
+import com.google.firebase.auth.FirebaseAuth;
 import com.razorski.razor.data.SensorDataUtils;
 
 import java.util.UUID;
@@ -61,7 +76,12 @@ public class MainActivity extends AppCompatActivity
     private ProgressBar progressBar;
     private CheckBox connectionCheckBox;
     private Switch recordSwitch;
-    Toolbar toolbar;
+    private Toolbar toolbar;
+    private NavigationView navigationView;
+
+    // Authentication stuff.
+    private FirebaseAuth firebaseAuth;
+    private ProfileTracker profileTracker;
 
     /**
      * This code runs once it is verified that the program has permission to all its resources.
@@ -142,6 +162,8 @@ public class MainActivity extends AppCompatActivity
         };
         setContentView(R.layout.activity_main);
 
+        setupAuthenticationProcess();
+
         // Assign views to variables.
         createViewVariables();
 
@@ -190,8 +212,19 @@ public class MainActivity extends AppCompatActivity
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        // Click on the login button in the navigation view will take us to the login page.
+        Button loginButton = (Button) navigationView.getHeaderView(0)
+                .findViewById(R.id.nav_bar_login_button);
+        loginButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getBaseContext(), LoginActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
     // Delegates the permission handling to generated method.
@@ -225,9 +258,82 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // TODO: Take care of business here.
-        
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private void setupAuthenticationProcess() {
+        FacebookSdk.sdkInitialize(getApplicationContext());
+        firebaseAuth = FirebaseAuth.getInstance();
+
+        profileTracker = new ProfileTracker() {
+            @Override
+            protected void onCurrentProfileChanged(Profile oldProfile, Profile newProfile) {
+                // We have a profile.
+                if (newProfile != null) {
+                    // We also have token.
+                    if (AccessToken.getCurrentAccessToken() != null) {
+                        performLogin();
+                    }
+                } else {
+                    performLogout();
+                }
+            }
+        };
+        profileTracker.startTracking();
+    }
+
+    /**
+     * Logs in the user. Assumes that AccessToken and Profile data are available from facebook.
+     */
+    private void performLogin() {
+        AccessToken token = AccessToken.getCurrentAccessToken();
+        Profile profile = Profile.getCurrentProfile();
+        if (token == null || profile == null) {
+            return;
+        }
+
+        // Pass facebook token to firebase for actual signing in.
+        AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
+        firebaseAuth.signInWithCredential(credential)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        Log.d(TAG, "signInWithCredential:onComplete:" + task.isSuccessful());
+                        if (!task.isSuccessful()) {
+                            Log.w(TAG, "signInWithCredential", task.getException());
+                            Toast.makeText(getApplicationContext(), "Authentication failed.",
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+
+        // Also update the profile pic and name of the user in the navigation drawer.
+        View header = navigationView.getHeaderView(0);
+        Button login = (Button) header.findViewById(R.id.nav_bar_login_button);
+        NetworkImageView profileImage = (NetworkImageView) header.findViewById(R.id.nav_bar_profile_pic);
+        TextView userName = (TextView) header.findViewById(R.id.nav_bar_user_name);
+
+        login.setText("LOGOUT");
+        userName.setText(profile.getName());
+        profileImage.setImageUrl(profile.getProfilePictureUri(1000, 1000).toString(),
+                VolleySingleton.getInstance().getImageLoader());
+    }
+
+    /**
+     * Signs user out.
+     */
+    private void performLogout() {
+        Toast.makeText(getBaseContext(), "You're now logged out", Toast.LENGTH_SHORT).show();
+        firebaseAuth.signOut();
+
+        View header = navigationView.getHeaderView(0);
+        Button login = (Button) header.findViewById(R.id.nav_bar_login_button);
+        ImageView profileImage = (ImageView) header.findViewById(R.id.nav_bar_profile_pic);
+        TextView userName = (TextView) header.findViewById(R.id.nav_bar_user_name);
+
+        login.setText("LOGIN");
+        userName.setText("");
     }
 }
