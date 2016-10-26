@@ -1,7 +1,6 @@
 **/*.DS_Store
 
 android-razor/.idea/misc.xml
-android-razor/backend/build/*
 
 arduino-razor/pb/.DS_Store
 
