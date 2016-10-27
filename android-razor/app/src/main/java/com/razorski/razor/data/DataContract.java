@@ -1,9 +1,13 @@
 package com.razorski.razor.data;
 
 import android.content.ContentResolver;
-import android.content.ContentUris;
 import android.net.Uri;
 import android.provider.BaseColumns;
+import android.support.annotation.Nullable;
+import android.util.Base64;
+
+import com.google.protobuf.InvalidProtocolBufferException;
+import com.razorski.razor.SensorData;
 
 /**
  * Specifies the contract for the content provider.
@@ -24,6 +28,12 @@ public class DataContract {
     public static final class SensorEntry implements BaseColumns {
         public static final Uri CONTENT_URI =
                 BASE_CONTENT_URI.buildUpon().appendPath(PATH_SENSOR).build();
+
+        // Keys for query string params in the URI.
+        // The whole sensor reading is specified in the URI (encoded SensorData proto).
+        public static final String READING_KEY = "reading";
+        // The timestamp is specified in the URI.
+        public static final String TIMESTAMP_KEY = "timestamp";
 
         public static final String CONTENT_TYPE =
                 ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_SENSOR;
@@ -69,12 +79,39 @@ public class DataContract {
         // Timestamp of when the sensor was read in millis.
         public static final String COL_TIMESTAMP_MSEC = "timestamp_msec";
 
-        public static Uri buildLocationUri(long timestamp) {
-            return ContentUris.withAppendedId(CONTENT_URI, timestamp);
+        public static Uri uriForSensorReading(SensorData sensorData) {
+            byte[] encodedBytes = Base64.encode(sensorData.toByteArray(), Base64.DEFAULT);
+            String encodedString = new String(encodedBytes);
+
+            return CONTENT_URI.buildUpon().appendQueryParameter(READING_KEY, encodedString).build();
         }
 
-        public static long getTimestampFromUri(Uri uri) {
-            return Long.parseLong(uri.getPathSegments().get(2));
+        public static Uri uriForTimestamp(Long timestampMsec) {
+            return CONTENT_URI.buildUpon().appendQueryParameter(TIMESTAMP_KEY,
+                    timestampMsec.toString()).build();
+        }
+
+        public static long timestampFromUri(Uri uri) {
+            String encodedString = uri.getQueryParameter(TIMESTAMP_KEY);
+            return Long.parseLong(encodedString);
+        }
+
+        @Nullable
+        public static SensorData getReadingFromUri(Uri uri) {
+            String encodedReading = uri.getQueryParameter(READING_KEY);
+            if (encodedReading.isEmpty()) {
+                return null;
+            }
+
+
+            try {
+                byte[] decodedBytes = Base64.decode(encodedReading, Base64.DEFAULT);
+                SensorData result = SensorData.parseFrom(decodedBytes);
+                return result;
+            } catch (InvalidProtocolBufferException e) {
+                e.printStackTrace();
+                return null;
+            }
         }
     }
 }
