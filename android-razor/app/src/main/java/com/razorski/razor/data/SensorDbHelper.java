@@ -47,12 +47,12 @@ public class SensorDbHelper extends SQLiteOpenHelper {
                 SensorEntry.COL_R_ROLL + " REAL, " +
                 SensorEntry.COL_R_TEMP + " INTEGER, " +
                 SensorEntry.COL_R_PRESSURE + " INTEGER, " +
-                SensorEntry.COL_P_LOC_LAT + "REAL, " +
-                SensorEntry.COL_P_LOC_LONG + "REAL, " +
-                SensorEntry.COL_P_LOC_SPEED + "REAL, " +
-                SensorEntry.COL_P_LOC_ALT + "REAL, " +
-                SensorEntry.COL_P_LOC_ACCURACY + "REAL, " +
-                SensorEntry.COL_TIMESTAMP_MSEC + "INTEGER UNIQUE NOT NULL );";
+                SensorEntry.COL_P_LOC_LAT + " REAL, " +
+                SensorEntry.COL_P_LOC_LONG + " REAL, " +
+                SensorEntry.COL_P_LOC_SPEED + " REAL, " +
+                SensorEntry.COL_P_LOC_ALT + " REAL, " +
+                SensorEntry.COL_P_LOC_ACCURACY + " REAL, " +
+                SensorEntry.COL_TIMESTAMP_MSEC + " BIGINT UNIQUE NOT NULL );";
 
         sqLiteDatabase.execSQL(CREATE_SENSOR_TABLE_QUERY);
     }
