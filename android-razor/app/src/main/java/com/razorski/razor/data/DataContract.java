@@ -1,6 +1,7 @@
 package com.razorski.razor.data;
 
 import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.net.Uri;
 import android.provider.BaseColumns;
 import android.support.annotation.Nullable;
@@ -78,6 +79,11 @@ public class DataContract {
 
         // Timestamp of when the sensor was read in millis.
         public static final String COL_TIMESTAMP_MSEC = "timestamp_msec";
+
+
+        public static Uri uriForId(long id) {
+            return ContentUris.withAppendedId(CONTENT_URI, id);
+        }
 
         public static Uri uriForSensorReading(SensorData sensorData) {
             byte[] encodedBytes = Base64.encode(sensorData.toByteArray(), Base64.DEFAULT);

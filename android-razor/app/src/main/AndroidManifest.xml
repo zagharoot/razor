@@ -32,6 +32,10 @@
             android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
             android:label="aaa" />
         <activity android:name=".LoginActivity"></activity>
+
+        <provider
+            android:authorities="com.razorski.razor"
+            android:name=".data.RazorDataProvider" />
     </application>
 
 </manifest>
