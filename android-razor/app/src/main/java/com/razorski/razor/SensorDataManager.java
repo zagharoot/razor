@@ -1,7 +1,10 @@
 package com.razorski.razor;
 
-import android.os.Handler;
 import android.os.Looper;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 /**
  * Maintains the set of received SensorData protos from the hardware.
@@ -12,47 +15,34 @@ import android.os.Looper;
 public class SensorDataManager implements Runnable {
     private final String TAG = SensorDataManager.class.getName();
 
-    // This is the handler from the main UI. We send our messages to it to be shown in UI.
-    private Handler parentHandler;
-    // Handler that runs in this thread and receives proto data from the communication thread.
-    private Handler myHandler;
-
     private PhoneSensorCollector phoneSensorCollector;
 
-    public SensorDataManager(Handler parentHandler_, PhoneSensorCollector phoneSensorCollector_) {
-        parentHandler = parentHandler_;
+    public SensorDataManager(PhoneSensorCollector phoneSensorCollector_) {
         phoneSensorCollector = phoneSensorCollector_;
     }
 
-    /**
-     * Adds the sensor data to be processed. This function will be called in communication
-     * thread and NOT in our own thread.
-     */
-    public void addData(SensorData data) {
-        myHandler.obtainMessage(MainActivity.RECEIVED_DATA, data).sendToTarget();
+    @Subscribe(threadMode = ThreadMode.ASYNC)
+    public void onMessageEvent(EventMessage message) {
+        switch (message.getEventType()) {
+            case RECEIVED_RAW_DATA:
+                SensorData data = message.getSensorData();
+
+                // Things we want to do with the message:
+                // Right now, we just pass it along to the main UI but later we'll do more.
+                data = data.toBuilder().setPhoneData(phoneSensorCollector.readData()).build();
+
+                // Broadcast the processed data for the main UI.
+                EventMessage relayMessage =
+                        new EventMessage(EventMessage.EventType.DATA_READY_FOR_UI);
+                relayMessage.setSensorData(data);
+                EventBus.getDefault().post(relayMessage);
+        }
     }
 
     @Override
     public void run() {
+        EventBus.getDefault().register(this);
         Looper.prepare();
-        // Handler needs to be initialized in the thread this is running.
-        myHandler = new Handler() {
-            public void handleMessage(android.os.Message message) {
-                switch (message.what) {
-                    case MainActivity.RECEIVED_DATA:
-                        SensorData data = (SensorData) message.obj;
-
-                        // Things we want to do with the message:
-                        // Right now, we just pass it along to the main UI but later we'll do more.
-                        data = data.toBuilder().setPhoneData(phoneSensorCollector.readData())
-                                .build();
-                        parentHandler.obtainMessage(MainActivity.RECEIVED_DATA, data)
-                                .sendToTarget();
-                }
-                super.handleMessage(message);
-            }
-        };
-
         Looper.loop();
     }
 

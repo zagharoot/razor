@@ -4,7 +4,6 @@ import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -38,6 +37,10 @@ import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.razorski.razor.data.SensorDataUtils;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import java.util.UUID;
 
 import permissions.dispatcher.NeedsPermission;
@@ -53,15 +56,6 @@ public class MainActivity extends AppCompatActivity
     // TODO: These are hardcoded, need to change.
     public static final String BT_ADDRESS = "20:15:12:08:71:82";
     private static final UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
-
-    // Message IDs that we handle here.
-    public static final int RECEIVED_DATA = 1;
-    public static final int HW_CONNECTED = 2;
-    public static final int HW_CONNECTING = 3;
-    public static final int HW_DISCONNECTED = 4;
-
-    // Handler of messages.
-    private Handler dataHandler;
 
     // Pointer to objects that get and process data in other threads.
     private SensorDataManager dataManager;
@@ -94,8 +88,8 @@ public class MainActivity extends AppCompatActivity
         // Set up the class for collecting data off of the phone.
         phoneSensorCollector = new PhoneSensorCollector(getBaseContext());
 
-        dataManager = new SensorDataManager(dataHandler, phoneSensorCollector);
-        streamParser = new SensorDataProtoParser(dataManager);
+        dataManager = new SensorDataManager(phoneSensorCollector);
+        streamParser = new SensorDataProtoParser();
 
         // Start the data manager thread. This doesn't do much on its own until the bluetooth thread
         // is also running.
@@ -103,7 +97,7 @@ public class MainActivity extends AppCompatActivity
         dataManagerThread.start();
 
         phoneSensorCollector.init();
-        btCommunicator = new BTCommunicator(MY_UUID, BT_ADDRESS, streamParser, dataHandler);
+        btCommunicator = new BTCommunicator(MY_UUID, BT_ADDRESS, streamParser);
         // Clicking on the connected checkbox will toggle connect/disconnect from HW.
         connectionCheckBox.setOnClickListener(new View.OnClickListener() {
 
@@ -117,50 +111,67 @@ public class MainActivity extends AppCompatActivity
         btThread.start();
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(EventMessage message) {
+        switch (message.getEventType()) {
+            case DATA_READY_FOR_UI:
+                SensorData data = message.getSensorData();
+                sensorValueTextView.setText(SensorDataUtils.toString(data));
+                break;
+            case HW_CONNECTED:
+                if (!connectionCheckBox.getText().equals("Connected")) {
+                    progressBar.setVisibility(View.INVISIBLE);
+                    connectionCheckBox.setText("Connected");
+                    connectionCheckBox.setChecked(true);
+                    recordSwitch.setVisibility(View.VISIBLE);
+                }
+                break;
+            case HW_CONNECTING:
+                if (!connectionCheckBox.getText().equals("Connecting...")) {
+                    progressBar.setVisibility(View.VISIBLE);
+                    progressBar.animate();
+                    connectionCheckBox.setText("Connecting...");
+                    connectionCheckBox.setChecked(false);
+                    recordSwitch.setChecked(false);
+                    recordSwitch.setVisibility(View.INVISIBLE);
+                }
+                break;
+            case HW_DISCONNECTED:
+                if (!connectionCheckBox.getText().equals("Disconnected")) {
+                    progressBar.setVisibility(View.INVISIBLE);
+                    connectionCheckBox.setText("Disconnected");
+                    connectionCheckBox.setChecked(false);
+                    recordSwitch.setChecked(false);
+                    recordSwitch.setVisibility(View.INVISIBLE);
+                }
+                break;
+            default:
+                return;
+        }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        if (!EventBus.getDefault().isRegistered(this)) {
+            EventBus.getDefault().register(this);
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        EventBus.getDefault().unregister(this);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        dataHandler = new Handler() {
-            public void handleMessage(android.os.Message message) {
-                switch (message.what) {
-                    case RECEIVED_DATA:
-                        SensorData data = (SensorData) message.obj;
-                        sensorValueTextView.setText(SensorDataUtils.toString(data));
-                        break;
-                    case HW_CONNECTED:
-                        if (!connectionCheckBox.getText().equals("Connected")) {
-                            progressBar.setVisibility(View.INVISIBLE);
-                            connectionCheckBox.setText("Connected");
-                            connectionCheckBox.setChecked(true);
-                            recordSwitch.setVisibility(View.VISIBLE);
-                        }
-                        break;
-                    case HW_CONNECTING:
-                        if (!connectionCheckBox.getText().equals("Connecting...")) {
-                            progressBar.setVisibility(View.VISIBLE);
-                            progressBar.animate();
-                            connectionCheckBox.setText("Connecting...");
-                            connectionCheckBox.setChecked(false);
-                            recordSwitch.setChecked(false);
-                            recordSwitch.setVisibility(View.INVISIBLE);
-                        }
-                        break;
-                    case HW_DISCONNECTED:
-                        if (!connectionCheckBox.getText().equals("Disconnected")) {
-                            progressBar.setVisibility(View.INVISIBLE);
-                            connectionCheckBox.setText("Disconnected");
-                            connectionCheckBox.setChecked(false);
-                            recordSwitch.setChecked(false);
-                            recordSwitch.setVisibility(View.INVISIBLE);
-                        }
-                        break;
-                    default:
-                        super.handleMessage(message);
-                }
-            }
-        };
         setContentView(R.layout.activity_main);
+
+        EventBus.getDefault().register(this);
 
         setupAuthenticationProcess();
 

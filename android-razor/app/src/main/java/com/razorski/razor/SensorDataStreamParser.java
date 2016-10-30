@@ -10,21 +10,17 @@ import java.io.InputStream;
  * and generating SensorData proto.
  */
 public abstract class SensorDataStreamParser {
-    private SensorDataManager dataManager;
 
-    public SensorDataStreamParser(SensorDataManager dataManager_)
-    {
-        dataManager = dataManager_;
-    }
+    public SensorDataStreamParser() {}
 
-    public void readNext(InputStream inputStream)  throws IOException {
+    public SensorData readNext(InputStream inputStream)  throws IOException {
         SensorData data = readNextInternal(inputStream);
         if (data != null) {
             // Add timestamp to the data.
             data = data.toBuilder().setTimestampMsec(System.currentTimeMillis()).build();
-
-            dataManager.addData(data);
         }
+
+        return data;
     }
 
     @Nullable
@@ -36,21 +32,12 @@ public abstract class SensorDataStreamParser {
  */
 class SensorDataProtoParser extends SensorDataStreamParser {
 
-    public SensorDataProtoParser(SensorDataManager dataManager_)
-    {
-        super(dataManager_);
-    }
-
     @Override
     protected SensorData readNextInternal(InputStream inputStream) throws IOException {
         if (inputStream == null) {
             return null;
         }
 
-        try {
-            return SensorData.parseDelimitedFrom(inputStream);
-        } catch (IOException e) {
-            return null;
-        }
+        return SensorData.parseDelimitedFrom(inputStream);
     }
 }
