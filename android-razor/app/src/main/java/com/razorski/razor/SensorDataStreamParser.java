@@ -27,17 +27,3 @@ public abstract class SensorDataStreamParser {
     abstract protected SensorData readNextInternal(InputStream inputStream) throws IOException;
 }
 
-/**
- * A parser that assumes we encode the proto on the Arduino side using proto serialization.
- */
-class SensorDataProtoParser extends SensorDataStreamParser {
-
-    @Override
-    protected SensorData readNextInternal(InputStream inputStream) throws IOException {
-        if (inputStream == null) {
-            return null;
-        }
-
-        return SensorData.parseDelimitedFrom(inputStream);
-    }
-}

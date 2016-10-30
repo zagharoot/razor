@@ -36,6 +36,8 @@
         <provider
             android:authorities="com.razorski.razor"
             android:name=".data.RazorDataProvider" />
+
+        <service android:name=".service.DataService" />
     </application>
 
 </manifest>

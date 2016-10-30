@@ -1,6 +1,5 @@
 package com.razorski.razor;
 
-import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -36,12 +35,11 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.razorski.razor.data.SensorDataUtils;
+import com.razorski.razor.service.DataService;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
-
-import java.util.UUID;
 
 import permissions.dispatcher.NeedsPermission;
 import permissions.dispatcher.OnShowRationale;
@@ -53,63 +51,16 @@ public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     private static final String TAG = MainActivity.class.getName();
 
-    // TODO: These are hardcoded, need to change.
-    public static final String BT_ADDRESS = "20:15:12:08:71:82";
-    private static final UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
-
-    // Pointer to objects that get and process data in other threads.
-    private SensorDataManager dataManager;
-    private Thread dataManagerThread;
-    private BTCommunicator btCommunicator;
-    private Thread btThread;
-    private SensorDataStreamParser streamParser;
-    private PhoneSensorCollector phoneSensorCollector;
-
     // Pointer to my UI elements.
     private TextView sensorValueTextView;
     private ProgressBar progressBar;
     private CheckBox connectionCheckBox;
     private Switch recordSwitch;
-    private Toolbar toolbar;
     private NavigationView navigationView;
 
     // Authentication stuff.
     private FirebaseAuth firebaseAuth;
     private ProfileTracker profileTracker;
-
-    /**
-     * This code runs once it is verified that the program has permission to all its resources.
-     * The annotation makes sure the permissions are requested if not already.
-     * This code will not run if the user denies permission.
-     */
-    @NeedsPermission({Manifest.permission.ACCESS_FINE_LOCATION,
-                      Manifest.permission.BLUETOOTH_ADMIN})
-    protected void checkPermissionAndRun() {
-        // Set up the class for collecting data off of the phone.
-        phoneSensorCollector = new PhoneSensorCollector(getBaseContext());
-
-        dataManager = new SensorDataManager(phoneSensorCollector);
-        streamParser = new SensorDataProtoParser();
-
-        // Start the data manager thread. This doesn't do much on its own until the bluetooth thread
-        // is also running.
-        dataManagerThread = new Thread(dataManager);
-        dataManagerThread.start();
-
-        phoneSensorCollector.init();
-        btCommunicator = new BTCommunicator(MY_UUID, BT_ADDRESS, streamParser);
-        // Clicking on the connected checkbox will toggle connect/disconnect from HW.
-        connectionCheckBox.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                btCommunicator.setConnect(connectionCheckBox.isChecked());
-            }
-        });
-
-        btThread = new Thread(btCommunicator);
-        btThread.start();
-    }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(EventMessage message) {
@@ -145,24 +96,7 @@ public class MainActivity extends AppCompatActivity
                     recordSwitch.setVisibility(View.INVISIBLE);
                 }
                 break;
-            default:
-                return;
         }
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-
-        if (!EventBus.getDefault().isRegistered(this)) {
-            EventBus.getDefault().register(this);
-        }
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        EventBus.getDefault().unregister(this);
     }
 
     @Override
@@ -185,14 +119,29 @@ public class MainActivity extends AppCompatActivity
         MainActivityPermissionsDispatcher.checkPermissionAndRunWithCheck(this);
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        if (!EventBus.getDefault().isRegistered(this)) {
+            EventBus.getDefault().register(this);
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        EventBus.getDefault().unregister(this);
+    }
+
     void startRecording() {
         Toast.makeText(getBaseContext(), "Starting to record", Toast.LENGTH_SHORT).show();
-        dataManager.startRecordingSession();
+        sendCommandToService(EventMessage.EventType.START_RECORDING);
     }
 
     void stopRecording() {
-        Toast.makeText(getBaseContext(), "Stopped recordring", Toast.LENGTH_SHORT).show();
-        dataManager.stopRecordingSession();
+        Toast.makeText(getBaseContext(), "Stopped recording", Toast.LENGTH_SHORT).show();
+        sendCommandToService(EventMessage.EventType.STOP_RECORDING);
     }
 
     /**
@@ -201,7 +150,6 @@ public class MainActivity extends AppCompatActivity
     private void createViewVariables() {
         sensorValueTextView = (TextView) findViewById(R.id.sensorValueText);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
-        connectionCheckBox = (CheckBox) findViewById(R.id.connectionStatus);
 
         recordSwitch = (Switch) findViewById(R.id.record_switch);
         recordSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -236,6 +184,20 @@ public class MainActivity extends AppCompatActivity
                 startActivity(intent);
             }
         });
+
+        connectionCheckBox = (CheckBox) findViewById(R.id.connectionStatus);
+        // Clicking on the connected checkbox will toggle connect/disconnect from HW.
+        connectionCheckBox.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                if (connectionCheckBox.isChecked()) {
+                    sendCommandToService(EventMessage.EventType.CONNECT_HW);
+                } else {
+                    sendCommandToService(EventMessage.EventType.DISCONNECT_HW);
+                }
+            }
+        });
     }
 
     // Delegates the permission handling to generated method.
@@ -247,8 +209,25 @@ public class MainActivity extends AppCompatActivity
                 grantResults);
     }
 
-    @OnShowRationale({Manifest.permission.ACCESS_FINE_LOCATION,
-            Manifest.permission.BLUETOOTH_ADMIN})
+    private void sendCommandToService(EventMessage.EventType command) {
+        Intent intent = new Intent(getApplicationContext(), DataService.class);
+        intent.putExtra(EventMessage.EVENT_TYPE_KEY, command.toString());
+        startService(intent);
+    }
+
+    /**
+     * This code runs once it is verified that the program has permission to all its resources.
+     * The annotation makes sure the permissions are requested if not already.
+     * This code will not run if the user denies permission.
+     */
+    @NeedsPermission({android.Manifest.permission.ACCESS_FINE_LOCATION,
+            android.Manifest.permission.BLUETOOTH_ADMIN})
+    protected void checkPermissionAndRun() {
+        sendCommandToService(EventMessage.EventType.CONNECT_HW);
+    }
+
+    @OnShowRationale({android.Manifest.permission.ACCESS_FINE_LOCATION,
+            android.Manifest.permission.BLUETOOTH_ADMIN})
     void showRationaleForPermissions(final PermissionRequest request) {
         new AlertDialog.Builder(this)
                 .setMessage("Razor cannot work without having access to location and bluetooth.")

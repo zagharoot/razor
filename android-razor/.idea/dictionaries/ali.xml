@@ -2,6 +2,7 @@
   <dictionary name="ali">
     <words>
       <w>arduino</w>
+      <w>protos</w>
     </words>
   </dictionary>
 </component>
