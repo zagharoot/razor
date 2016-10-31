@@ -10,6 +10,8 @@ import android.util.Base64;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.razorski.razor.SensorData;
 
+import java.util.List;
+
 /**
  * Specifies the contract for the content provider.
  */
@@ -44,6 +46,19 @@ public class DataContract {
 
         public static Uri uriForId(long id) {
             return ContentUris.withAppendedId(CONTENT_URI, id);
+        }
+
+        public static long idFromUri(Uri uri) {
+            List<String> segments = uri.getPathSegments();
+            if (segments.size() != 2) {
+                return -1;
+            } else {
+                try {
+                    return Long.valueOf(segments.get(1));
+                } catch (NumberFormatException e) {
+                    return -1;
+                }
+            }
         }
     }
 
@@ -139,6 +154,19 @@ public class DataContract {
             } catch (InvalidProtocolBufferException e) {
                 e.printStackTrace();
                 return null;
+            }
+        }
+
+        public static long idFromUri(Uri uri) {
+            List<String> segments = uri.getPathSegments();
+            if (segments.size() != 2) {
+                return -1;
+            } else {
+                try {
+                    return Long.valueOf(segments.get(1));
+                } catch (NumberFormatException e) {
+                    return -1;
+                }
             }
         }
     }

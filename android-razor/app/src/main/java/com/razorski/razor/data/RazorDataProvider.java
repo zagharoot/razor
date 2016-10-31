@@ -118,6 +118,7 @@ public class RazorDataProvider extends ContentProvider {
                 } else {
                     throw new android.database.SQLException("Failed to insert row into " + uri);
                 }
+                break;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
