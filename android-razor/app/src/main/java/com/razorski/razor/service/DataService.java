@@ -4,9 +4,12 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
+import android.support.annotation.WorkerThread;
+import android.util.Log;
 
 import com.razorski.razor.EventMessage;
 import com.razorski.razor.PhoneSensorCollector;
+import com.razorski.razor.RecordSession;
 import com.razorski.razor.SensorData;
 import com.razorski.razor.data.SensorDataProtoParser;
 import com.razorski.razor.data.SensorDataStreamParser;
@@ -15,7 +18,9 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.util.Queue;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * The service that does most of the work for razor. I.e. record data received from bluetooth
@@ -23,6 +28,7 @@ import java.util.UUID;
  */
 
 public class DataService extends Service {
+    private static final String TAG = DataService.class.getSimpleName();
 
     // TODO: These are hardcoded, need to change.
     public static final String BT_ADDRESS = "20:15:12:08:71:82";
@@ -33,6 +39,9 @@ public class DataService extends Service {
     private Thread btThread;
     private SensorDataStreamParser streamParser;
     private PhoneSensorCollector phoneSensorCollector;
+
+    Queue<SensorData> unprocessedData;
+    @Nullable RecordSession.Builder recordSession;
 
     @Override
     public void onCreate() {
@@ -45,6 +54,8 @@ public class DataService extends Service {
         phoneSensorCollector.init();
 
         streamParser = new SensorDataProtoParser();
+        unprocessedData = new ConcurrentLinkedQueue<>();
+        recordSession = null;
 
         btCommunicator = new BTCommunicator(MY_UUID, BT_ADDRESS, streamParser);
         btThread = new Thread(btCommunicator);
@@ -76,6 +87,7 @@ public class DataService extends Service {
     }
 
     // This handles processing of received sensor data in another working thread.
+    @WorkerThread
     @Subscribe(threadMode = ThreadMode.ASYNC)
     public void onMessageEvent(EventMessage message) {
         switch (message.getEventType()) {
@@ -85,6 +97,7 @@ public class DataService extends Service {
                 // Things we want to do with the message:
                 // Right now, we just pass it along to the main UI but later we'll do more.
                 data = data.toBuilder().setPhoneData(phoneSensorCollector.readData()).build();
+                unprocessedData.add(data);
 
                 // Broadcast the processed data for the main UI.
                 EventMessage relayMessage =
@@ -94,14 +107,27 @@ public class DataService extends Service {
         }
     }
 
+    @WorkerThread
     // Starts a recording session.
-    private void startRecording() {
-        // TODO: implement.
+    synchronized private void startRecording() {
+        if (recordSession == null) {
+            recordSession = RecordSession.newBuilder()
+                    .setStartTimestampMsec(System.currentTimeMillis());
+        } else {
+            Log.e(TAG, "Trying to start record where we're already recording");
+        }
     }
 
     // Stops a recording session.
-    private void stopRecording() {
-        // TODO: implement.
+    synchronized private void stopRecording() {
+        if (recordSession == null) {
+            Log.e(TAG, "Trying to stop record but we weren't recording in the first place.");
+            return;
+        }
+
+        recordSession = recordSession.setEndTimestampMsec(System.currentTimeMillis());
+        // TODO: Send data to be recorded.
+        recordSession = null;
     }
 
     @Override
