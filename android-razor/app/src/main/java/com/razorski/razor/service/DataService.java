@@ -5,12 +5,11 @@ import android.content.Intent;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 
-import com.razorski.razor.BTCommunicator;
 import com.razorski.razor.EventMessage;
 import com.razorski.razor.PhoneSensorCollector;
 import com.razorski.razor.SensorData;
-import com.razorski.razor.SensorDataProtoParser;
-import com.razorski.razor.SensorDataStreamParser;
+import com.razorski.razor.data.SensorDataProtoParser;
+import com.razorski.razor.data.SensorDataStreamParser;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;

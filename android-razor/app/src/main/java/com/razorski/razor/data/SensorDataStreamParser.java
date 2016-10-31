@@ -1,6 +1,8 @@
-package com.razorski.razor;
+package com.razorski.razor.data;
 
 import android.support.annotation.Nullable;
+
+import com.razorski.razor.SensorData;
 
 import java.io.IOException;
 import java.io.InputStream;

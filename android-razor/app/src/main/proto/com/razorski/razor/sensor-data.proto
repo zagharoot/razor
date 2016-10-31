@@ -75,14 +75,16 @@ message SensorData {
 // to the bottom.
 // This distinction is logical, meaning it is regardless of how many times we record/pause
 // data collection in the app.
-message Run {
+message RunSession {
     optional int64 start_timestamp_msec = 1;
     optional int64 end_timestamp_msec = 2;
 
     repeated SensorData sensor_data = 3;
 }
 
-
+// A recording session on the phone. In general, we shouldn't really care about this, because
+// ideally we only look at RunSession to group sensor readings together.
+// This is just a convinient way to store unsynced/unprocessed data together till we do so.
 message RecordSession {
     optional int64 start_timestamp_msec = 1;
     optional int64 end_timestamp_msec = 2;

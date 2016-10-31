@@ -17,13 +17,13 @@ public class DataContract {
     public static final String CONTENT_AUTHORITY = "com.razorski.razor";
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
 
-    // Paths:
-
+    // Paths for the URIs:
     // Stores individual sensor readings for users.
     public static final String PATH_SENSOR = "sensor";
-    // Stores sessions. Each session is a group of related sensor readings. E.g. a ski run from
+    // Stores run sessions. Each session is a group of related sensor readings. E.g. a ski run from
     // top of the trail to the bottom.
-    public static final String PATH_SESSION = "session";
+    public static final String PATH_RUN_SESSION = "run-session";
+    public static final String PATH_RECORD_SESSION = "record-session";
 
     // Contract for the 'sensor' table.
     public static final class SensorEntry implements BaseColumns {

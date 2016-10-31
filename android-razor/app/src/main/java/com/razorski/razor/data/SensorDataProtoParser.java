@@ -1,4 +1,6 @@
-package com.razorski.razor;
+package com.razorski.razor.data;
+
+import com.razorski.razor.SensorData;
 
 import java.io.IOException;
 import java.io.InputStream;

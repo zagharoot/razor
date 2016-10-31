@@ -1,9 +1,13 @@
-package com.razorski.razor;
+package com.razorski.razor.service;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.util.Log;
+
+import com.razorski.razor.EventMessage;
+import com.razorski.razor.SensorData;
+import com.razorski.razor.data.SensorDataStreamParser;
 
 import org.greenrobot.eventbus.EventBus;
 
