@@ -2,6 +2,7 @@ package com.razorski.razor.service;
 
 import android.app.Service;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
@@ -11,6 +12,8 @@ import com.razorski.razor.EventMessage;
 import com.razorski.razor.PhoneSensorCollector;
 import com.razorski.razor.RecordSession;
 import com.razorski.razor.SensorData;
+import com.razorski.razor.data.DataContract;
+import com.razorski.razor.data.ProtoConverter;
 import com.razorski.razor.data.SensorDataProtoParser;
 import com.razorski.razor.data.SensorDataStreamParser;
 
@@ -126,7 +129,10 @@ public class DataService extends Service {
         }
 
         recordSession = recordSession.setEndTimestampMsec(System.currentTimeMillis());
-        // TODO: Send data to be recorded.
+
+        Uri uri = getContentResolver().insert(DataContract.RecordSessionEntry.CONTENT_URI,
+                ProtoConverter.contentValuesFromRecordSession(recordSession.build()));
+
         recordSession = null;
     }
 
