@@ -9,14 +9,14 @@ import com.razorski.razor.data.DataContract.SensorEntry;
  *  Manages a local database for razor sensor data.
  */
 
-public class SensorDbHelper extends SQLiteOpenHelper {
+public class RazorDbHelper extends SQLiteOpenHelper {
 
     // Increment this every time you change the schema.
     private static final int DATABASE_VERSION = 1;
 
     static final String DATABASE_NAME = "razor.db";
 
-    public SensorDbHelper(Context context) {
+    public RazorDbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 

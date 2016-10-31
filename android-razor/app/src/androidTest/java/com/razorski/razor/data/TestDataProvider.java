@@ -33,7 +33,7 @@ public class TestDataProvider {
 
     // Since we want each test to start with a clean slate
     void deleteTheDatabase() {
-        getContext().deleteDatabase(SensorDbHelper.DATABASE_NAME);
+        getContext().deleteDatabase(RazorDbHelper.DATABASE_NAME);
     }
 
     @Before
@@ -78,7 +78,7 @@ public class TestDataProvider {
     @Test
     public void testBasicWeatherQuery() {
         // Insert our test records into the database.
-        SensorDbHelper dbHelper = new SensorDbHelper(getContext());
+        RazorDbHelper dbHelper = new RazorDbHelper(getContext());
         SQLiteDatabase db = dbHelper.getWritableDatabase();
 
         SensorData originalData = TestUtils.generateFakeSensorData();

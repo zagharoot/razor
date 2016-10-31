@@ -42,7 +42,7 @@ public class TestDb {
 
     // Since we want each test to start with a clean slate
     void deleteTheDatabase() {
-        getContext().deleteDatabase(SensorDbHelper.DATABASE_NAME);
+        getContext().deleteDatabase(RazorDbHelper.DATABASE_NAME);
     }
 
     @Before
@@ -55,8 +55,8 @@ public class TestDb {
         final HashSet<String> tableNameHashSet = new HashSet<String>();
         tableNameHashSet.add(DataContract.SensorEntry.TABLE_NAME);
 
-        getContext().deleteDatabase(SensorDbHelper.DATABASE_NAME);
-        SQLiteDatabase db = new SensorDbHelper(getContext()).getWritableDatabase();
+        getContext().deleteDatabase(RazorDbHelper.DATABASE_NAME);
+        SQLiteDatabase db = new RazorDbHelper(getContext()).getWritableDatabase();
         assertEquals(true, db.isOpen());
 
         // Have we created the tables we want?
@@ -80,7 +80,7 @@ public class TestDb {
 
     @Test
     public void sensorTableOperation() {
-        SensorDbHelper dbHelper = new SensorDbHelper(getContext());
+        RazorDbHelper dbHelper = new RazorDbHelper(getContext());
         SQLiteDatabase db = dbHelper.getWritableDatabase();
 
         SensorData originalData = generateFakeSensorData();
@@ -119,7 +119,7 @@ public class TestDb {
 
     @Test
     public void sensorTableNullValues() {
-        SensorDbHelper dbHelper = new SensorDbHelper(getContext());
+        RazorDbHelper dbHelper = new RazorDbHelper(getContext());
         SQLiteDatabase db = dbHelper.getWritableDatabase();
 
         SensorData originalData = generateFakeSensorData();

@@ -16,7 +16,7 @@ public class RazorDataProvider extends ContentProvider {
 
     // The URI Matcher used by this content provider.
     private static final UriMatcher uriMatcher = buildUriMatcher();
-    private SensorDbHelper dbHelper;
+    private RazorDbHelper dbHelper;
 
     // Different type of URIs we support:
 
@@ -44,7 +44,7 @@ public class RazorDataProvider extends ContentProvider {
 
     @Override
     public boolean onCreate() {
-        dbHelper = new SensorDbHelper(getContext());
+        dbHelper = new RazorDbHelper(getContext());
         return true;
     }
 
