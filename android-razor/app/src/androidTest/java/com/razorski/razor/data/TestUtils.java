@@ -4,6 +4,7 @@ import com.razorski.razor.FootSensorData;
 import com.razorski.razor.IMUData;
 import com.razorski.razor.LocationData;
 import com.razorski.razor.PhoneData;
+import com.razorski.razor.RecordSession;
 import com.razorski.razor.SensorData;
 
 /**
@@ -11,6 +12,11 @@ import com.razorski.razor.SensorData;
  */
 
 public class TestUtils {
+
+    public static RecordSession createRecordSession(long start, long end) {
+        return RecordSession.newBuilder().setStartTimestampMsec(start)
+                .setEndTimestampMsec(end).build();
+    }
 
     public static SensorData generateFakeSensorData() {
         SensorData.Builder builder = SensorData.newBuilder();

@@ -8,6 +8,7 @@ import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 import android.util.Log;
 
+import com.razorski.razor.RecordSession;
 import com.razorski.razor.SensorData;
 
 import junit.framework.Assert;
@@ -54,6 +55,7 @@ public class TestDb {
     public void testCreateDb() throws Throwable {
         final HashSet<String> tableNameHashSet = new HashSet<String>();
         tableNameHashSet.add(DataContract.SensorEntry.TABLE_NAME);
+        tableNameHashSet.add(DataContract.RecordSessionEntry.TABLE_NAME);
 
         getContext().deleteDatabase(RazorDbHelper.DATABASE_NAME);
         SQLiteDatabase db = new RazorDbHelper(getContext()).getWritableDatabase();
@@ -79,13 +81,53 @@ public class TestDb {
     }
 
     @Test
+    public void recordSessionTableOperation() {
+        RazorDbHelper dbHelper = new RazorDbHelper(getContext());
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+
+        RecordSession originalData = RecordSession.newBuilder().setStartTimestampMsec(12345L)
+                .setEndTimestampMsec(12346L).build();
+
+        ContentValues contentValues = ProtoConverter.contentValuesFromRecordSession(originalData);
+
+        // Insert the data into the table.
+        long rowId = db.insert(DataContract.RecordSessionEntry.TABLE_NAME, null, contentValues);
+        assertTrue(rowId != -1);
+
+        // Now read data back from database and compare with the original data.
+        Cursor cursor = db.query(
+                DataContract.RecordSessionEntry.TABLE_NAME,  // Table to Query
+                null, // leaving "columns" null just returns all the columns.
+                null, // cols for "where" clause
+                null, // values for "where" clause
+                null, // columns to group by
+                null, // columns to filter by row groups
+                null  // sort order
+        );
+
+        // Move the cursor to the first valid database row and check to see if we have any rows.
+        assertTrue( "Error: No Records returned from sensor query", cursor.moveToFirst());
+
+        RecordSession readProto = ProtoConverter.recordSessionFromCursor(cursor);
+
+        // Finally, move the cursor to demonstrate that there is only one record in the database.
+        assertFalse( "Error: More than one record returned from sensor query",
+                cursor.moveToNext());
+
+        Log.d(TAG, "Original proto: " + originalData.toString());
+        Assert.assertEquals(originalData, readProto);
+        cursor.close();
+        dbHelper.close();
+    }
+
+    @Test
     public void sensorTableOperation() {
         RazorDbHelper dbHelper = new RazorDbHelper(getContext());
         SQLiteDatabase db = dbHelper.getWritableDatabase();
 
         SensorData originalData = generateFakeSensorData();
 
-        ContentValues contentValues = ProtoConverter.fromProto(originalData);
+        ContentValues contentValues = ProtoConverter.contentValuesFromSensorData(originalData);
 
         // Insert the data into the table.
         long rowId = db.insert(DataContract.SensorEntry.TABLE_NAME, null, contentValues);
@@ -105,7 +147,7 @@ public class TestDb {
         // Move the cursor to the first valid database row and check to see if we have any rows.
         assertTrue( "Error: No Records returned from sensor query", cursor.moveToFirst());
 
-        SensorData readProto = ProtoConverter.fromCursor(cursor);
+        SensorData readProto = ProtoConverter.sensorDataFromCursor(cursor);
 
         // Finally, move the cursor to demonstrate that there is only one record in the database.
         assertFalse( "Error: More than one record returned from sensor query",
@@ -126,7 +168,7 @@ public class TestDb {
         // Clear sensor data from left foot.
         originalData = originalData.toBuilder().clearLeft().build();
 
-        ContentValues contentValues = ProtoConverter.fromProto(originalData);
+        ContentValues contentValues = ProtoConverter.contentValuesFromSensorData(originalData);
 
         // Insert the data into the table.
         long rowId = db.insert(DataContract.SensorEntry.TABLE_NAME, null, contentValues);
@@ -146,7 +188,7 @@ public class TestDb {
         // Move the cursor to the first valid database row and check to see if we have any rows.
         assertTrue( "Error: No Records returned from sensor query", cursor.moveToFirst());
 
-        SensorData readProto = ProtoConverter.fromCursor(cursor);
+        SensorData readProto = ProtoConverter.sensorDataFromCursor(cursor);
 
         // Finally, move the cursor to demonstrate that there is only one record in the database.
         assertFalse( "Error: More than one record returned from sensor query",

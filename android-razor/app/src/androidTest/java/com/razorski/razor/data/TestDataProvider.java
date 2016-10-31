@@ -8,8 +8,10 @@ import android.content.pm.ProviderInfo;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.test.InstrumentationRegistry;
+import android.support.test.espresso.core.deps.guava.collect.ImmutableList;
 import android.support.test.runner.AndroidJUnit4;
 
+import com.razorski.razor.RecordSession;
 import com.razorski.razor.SensorData;
 
 import org.junit.Before;
@@ -76,13 +78,52 @@ public class TestDataProvider {
     }
 
     @Test
+    public void testBasicRecordSessionQuery() {
+        // Insert our test records into the database.
+        RazorDbHelper dbHelper = new RazorDbHelper(getContext());
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+
+        ImmutableList<RecordSession> records = ImmutableList.of(
+            TestUtils.createRecordSession(1, 3),
+            TestUtils.createRecordSession(5, 6),
+            TestUtils.createRecordSession(7, 9));
+
+        for (RecordSession session : records) {
+            ContentValues testValues = ProtoConverter.contentValuesFromRecordSession(session);
+            // Insert the data into the table.
+            long rowId = db.insert(DataContract.RecordSessionEntry.TABLE_NAME, null, testValues);
+            assertTrue(rowId != -1);
+        }
+        db.close();
+
+        // Test the basic content provider query.
+        Cursor cursor = getContext().getContentResolver().query(
+                DataContract.RecordSessionEntry.CONTENT_URI,
+                null,
+                null,
+                null,
+                null
+        );
+
+        cursor.moveToFirst();
+
+        assertEquals(records.size(), cursor.getCount());
+        for (RecordSession session : records) {
+            RecordSession readData = ProtoConverter.recordSessionFromCursor(cursor);
+            assertEquals(session, readData);
+            cursor.moveToNext();
+        }
+        cursor.close();
+    }
+
+    @Test
     public void testBasicWeatherQuery() {
         // Insert our test records into the database.
         RazorDbHelper dbHelper = new RazorDbHelper(getContext());
         SQLiteDatabase db = dbHelper.getWritableDatabase();
 
         SensorData originalData = TestUtils.generateFakeSensorData();
-        ContentValues testValues = ProtoConverter.fromProto(originalData);
+        ContentValues testValues = ProtoConverter.contentValuesFromSensorData(originalData);
         // Insert the data into the table.
         long rowId = db.insert(DataContract.SensorEntry.TABLE_NAME, null, testValues);
         assertTrue(rowId != -1);
@@ -99,7 +140,7 @@ public class TestDataProvider {
 
         cursor.moveToFirst();
 
-        SensorData readData = ProtoConverter.fromCursor(cursor);
+        SensorData readData = ProtoConverter.sensorDataFromCursor(cursor);
         cursor.close();
         assertEquals(originalData, readData);
     }

@@ -3,6 +3,8 @@ package com.razorski.razor.data;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+
+import com.razorski.razor.data.DataContract.RecordSessionEntry;
 import com.razorski.razor.data.DataContract.SensorEntry;
 
 /**
@@ -12,7 +14,7 @@ import com.razorski.razor.data.DataContract.SensorEntry;
 public class RazorDbHelper extends SQLiteOpenHelper {
 
     // Increment this every time you change the schema.
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
 
     static final String DATABASE_NAME = "razor.db";
 
@@ -53,14 +55,30 @@ public class RazorDbHelper extends SQLiteOpenHelper {
                 SensorEntry.COL_P_LOC_ALT + " REAL, " +
                 SensorEntry.COL_P_LOC_ACCURACY + " REAL, " +
                 SensorEntry.COL_TIMESTAMP_MSEC + " BIGINT UNIQUE NOT NULL );";
-
         sqLiteDatabase.execSQL(CREATE_SENSOR_TABLE_QUERY);
+
+        final String INDEX_SENSOR_QUERY = "CREATE INDEX SENSOR_TIMESTAMP_IDX ON " +
+                SensorEntry.TABLE_NAME + "(" + SensorEntry.COL_TIMESTAMP_MSEC + ");";
+        sqLiteDatabase.execSQL(INDEX_SENSOR_QUERY);
+
+        final String CREATE_RECORD_SESSION_TABLE_QUERY = "CREATE TABLE " +
+                RecordSessionEntry.TABLE_NAME + " (" +
+                RecordSessionEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+                RecordSessionEntry.COL_START_TIMESTAMP_MSEC + " BIGINT UNIQUE NOT NULL, " +
+                RecordSessionEntry.COL_END_TIMESTAMP_MSEC + " BIGINT UNIQUE NOT NULL );";
+        sqLiteDatabase.execSQL(CREATE_RECORD_SESSION_TABLE_QUERY);
+
+        final String INDEX_RECORD_SESSION_QUERY = "CREATE INDEX RECORD_SESSION_TIMESTAMP_IDX ON " +
+                RecordSessionEntry.TABLE_NAME + "(" + RecordSessionEntry.COL_START_TIMESTAMP_MSEC +
+                ");";
+        sqLiteDatabase.execSQL(INDEX_RECORD_SESSION_QUERY);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int oldVersion, int newVersion) {
         // On upgrades, we simply get rid of all the data.
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + SensorEntry.TABLE_NAME);
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + RecordSessionEntry.TABLE_NAME);
         onCreate(sqLiteDatabase);
     }
 }

@@ -15,26 +15,40 @@ import android.net.Uri;
 public class RazorDataProvider extends ContentProvider {
 
     // The URI Matcher used by this content provider.
-    private static final UriMatcher uriMatcher = buildUriMatcher();
+    private static final UriMatcher sensorUriMatcher = buildUriMatcher();
     private RazorDbHelper dbHelper;
 
     // Different type of URIs we support:
 
     // Direct simple access to sensor table.
     static final int SENSOR = 100;
+    // Direct simple access to record-session table.
+    static final int RECORD_SESSION = 200;
 
     private static final SQLiteQueryBuilder sensorQueryBuilder;
+    private static final SQLiteQueryBuilder recordSessionQueryBuilder;
 
     static{
         sensorQueryBuilder = new SQLiteQueryBuilder();
         sensorQueryBuilder.setTables(DataContract.SensorEntry.TABLE_NAME);
+
+        recordSessionQueryBuilder = new SQLiteQueryBuilder();
+        recordSessionQueryBuilder.setTables(DataContract.RecordSessionEntry.TABLE_NAME);
     }
 
     static UriMatcher buildUriMatcher() {
         UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
 
         matcher.addURI(DataContract.CONTENT_AUTHORITY, DataContract.PATH_SENSOR, SENSOR);
+        matcher.addURI(DataContract.CONTENT_AUTHORITY, DataContract.PATH_RECORD_SESSION,
+                RECORD_SESSION);
+
         return matcher;
+    }
+
+    Cursor getRecordSessionData(Uri uri, String[] projection, String sortOrder) {
+        return recordSessionQueryBuilder.query(dbHelper.getReadableDatabase(), projection, "",
+                null, "", "", sortOrder);
     }
 
     Cursor getSensorData(Uri uri, String[] projection, String sortOrder) {
@@ -51,12 +65,14 @@ public class RazorDataProvider extends ContentProvider {
     // Given a URI returns what type of cursor it'll be bound to (item or list of items).
     @Override
     public String getType(Uri uri) {
-        final int match = uriMatcher.match(uri);
+        final int match = sensorUriMatcher.match(uri);
 
         switch (match) {
             // Direct access to sensor table will return multiple items.
             case SENSOR:
                 return DataContract.SensorEntry.CONTENT_TYPE;
+            case RECORD_SESSION:
+                return DataContract.RecordSessionEntry.CONTENT_TYPE;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
@@ -66,12 +82,13 @@ public class RazorDataProvider extends ContentProvider {
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs,
                         String sortOrder) {
         Cursor result;
-        switch (uriMatcher.match(uri)) {
+        switch (sensorUriMatcher.match(uri)) {
             case SENSOR:
-            {
                 result = getSensorData(uri, projection, sortOrder);
                 break;
-            }
+            case RECORD_SESSION:
+                result = getRecordSessionData(uri, projection, sortOrder);
+                break;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
@@ -82,7 +99,7 @@ public class RazorDataProvider extends ContentProvider {
     @Override
     public Uri insert(Uri uri, ContentValues values) {
         final SQLiteDatabase db = dbHelper.getWritableDatabase();
-        final int match = uriMatcher.match(uri);
+        final int match = sensorUriMatcher.match(uri);
         Uri result;
 
         switch (match) {
@@ -94,6 +111,13 @@ public class RazorDataProvider extends ContentProvider {
                     throw new android.database.SQLException("Failed to insert row into " + uri);
                 }
                 break;
+            case RECORD_SESSION:
+                _id = db.insert(DataContract.RecordSessionEntry.TABLE_NAME, null, values);
+                if (_id > 0) {
+                    result = DataContract.RecordSessionEntry.uriForId(_id);
+                } else {
+                    throw new android.database.SQLException("Failed to insert row into " + uri);
+                }
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
@@ -117,7 +141,7 @@ public class RazorDataProvider extends ContentProvider {
     @Override
     public int bulkInsert(Uri uri, ContentValues[] values) {
         final SQLiteDatabase db = dbHelper.getWritableDatabase();
-        final int match = uriMatcher.match(uri);
+        final int match = sensorUriMatcher.match(uri);
         switch (match) {
             case SENSOR:
                 db.beginTransaction();

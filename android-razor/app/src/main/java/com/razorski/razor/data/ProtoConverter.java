@@ -7,6 +7,7 @@ import com.razorski.razor.FootSensorData;
 import com.razorski.razor.IMUData;
 import com.razorski.razor.LocationData;
 import com.razorski.razor.PhoneData;
+import com.razorski.razor.RecordSession;
 import com.razorski.razor.SensorData;
 import com.razorski.razor.data.DataContract.SensorEntry;
 
@@ -23,7 +24,22 @@ public class ProtoConverter {
         return cursor.isNull(result) ? -1 : result;
     }
 
-    public static SensorData fromCursor(Cursor cursor) {
+    public static RecordSession recordSessionFromCursor(Cursor cursor) {
+        RecordSession.Builder builder = RecordSession.newBuilder();
+
+        int index = indexAndValid(cursor, DataContract.RecordSessionEntry.COL_START_TIMESTAMP_MSEC);
+        if (index != -1) {
+            builder.setStartTimestampMsec(cursor.getLong(index));
+        }
+
+        index = indexAndValid(cursor, DataContract.RecordSessionEntry.COL_END_TIMESTAMP_MSEC);
+        if (index != -1) {
+            builder.setEndTimestampMsec(cursor.getLong(index));
+        }
+        return builder.build();
+    }
+
+    public static SensorData sensorDataFromCursor(Cursor cursor) {
         SensorData.Builder builder = SensorData.newBuilder();
 
         int index = indexAndValid(cursor, SensorEntry.COL_TIMESTAMP_MSEC);
@@ -212,7 +228,23 @@ public class ProtoConverter {
         return builder.build();
     }
 
-    public static ContentValues fromProto(SensorData protoData) {
+    public static ContentValues contentValuesFromRecordSession(RecordSession protoData) {
+        ContentValues result = new ContentValues();
+
+        if (protoData.hasStartTimestampMsec()) {
+            result.put(DataContract.RecordSessionEntry.COL_START_TIMESTAMP_MSEC,
+                    protoData.getStartTimestampMsec());
+        }
+
+        if (protoData.hasEndTimestampMsec()) {
+            result.put(DataContract.RecordSessionEntry.COL_END_TIMESTAMP_MSEC,
+                    protoData.getEndTimestampMsec());
+        }
+
+        return result;
+    }
+
+    public static ContentValues contentValuesFromSensorData(SensorData protoData) {
         ContentValues result = new ContentValues();
 
         // Data at the SensorData level.

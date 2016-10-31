@@ -25,6 +25,28 @@ public class DataContract {
     public static final String PATH_RUN_SESSION = "run-session";
     public static final String PATH_RECORD_SESSION = "record-session";
 
+    // Contract for the 'record-session' table.
+    public static final class RecordSessionEntry implements BaseColumns {
+        public static final Uri CONTENT_URI =
+                BASE_CONTENT_URI.buildUpon().appendPath(PATH_RECORD_SESSION).build();
+
+        public static final String CONTENT_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE + "/" +
+                CONTENT_AUTHORITY + "/" + PATH_RECORD_SESSION;
+        public static final String CONTENT_ITEM_TYPE = ContentResolver.CURSOR_ITEM_BASE_TYPE +
+                "/" + CONTENT_AUTHORITY + "/" + PATH_RECORD_SESSION;
+
+        // Table name.
+        public static final String TABLE_NAME = "RecordSession";
+
+        // Timestamp of begin and end time in millis.
+        public static final String COL_START_TIMESTAMP_MSEC = "start_timestamp_msec";
+        public static final String COL_END_TIMESTAMP_MSEC = "end_timestamp_msec";
+
+        public static Uri uriForId(long id) {
+            return ContentUris.withAppendedId(CONTENT_URI, id);
+        }
+    }
+
     // Contract for the 'sensor' table.
     public static final class SensorEntry implements BaseColumns {
         public static final Uri CONTENT_URI =
