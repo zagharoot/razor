@@ -1,6 +1,7 @@
 package com.razorski.razor.service;
 
 import android.app.Service;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.IBinder;
@@ -21,6 +22,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.util.ArrayList;
 import java.util.Queue;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -42,6 +44,9 @@ public class DataService extends Service {
     private Thread btThread;
     private SensorDataStreamParser streamParser;
     private PhoneSensorCollector phoneSensorCollector;
+
+    // How many items do we keep in our queue before syncing with database.
+    private static final int QUEUE_SIZE = 100;
 
     Queue<SensorData> unprocessedData;
     @Nullable RecordSession.Builder recordSession;
@@ -100,7 +105,13 @@ public class DataService extends Service {
                 // Things we want to do with the message:
                 // Right now, we just pass it along to the main UI but later we'll do more.
                 data = data.toBuilder().setPhoneData(phoneSensorCollector.readData()).build();
-                unprocessedData.add(data);
+
+                if (recordSession != null) {
+                    unprocessedData.add(data);
+                    if (unprocessedData.size() > QUEUE_SIZE) {
+                        flushSensorDataToDatabase();
+                    }
+                }
 
                 // Broadcast the processed data for the main UI.
                 EventMessage relayMessage =
@@ -108,6 +119,24 @@ public class DataService extends Service {
                 relayMessage.setSensorData(data);
                 EventBus.getDefault().post(relayMessage);
         }
+    }
+
+    @WorkerThread
+    private void flushSensorDataToDatabase() {
+        if (unprocessedData.isEmpty()) {
+            return;
+        }
+
+        ArrayList<ContentValues> valuesList = new ArrayList<>();
+        while (!unprocessedData.isEmpty()) {
+            SensorData sensorData = unprocessedData.remove();
+            valuesList.add(ProtoConverter.contentValuesFromSensorData(sensorData));
+        }
+        ContentValues[] valuesArray = new ContentValues[valuesList.size()];
+        valuesList.toArray(valuesArray);
+        int recordsWritten = getContentResolver().bulkInsert(
+                DataContract.SensorEntry.CONTENT_URI, valuesArray);
+        Log.d(TAG, "Wrote " + recordsWritten + " sensor data to database.");
     }
 
     @WorkerThread
@@ -134,12 +163,14 @@ public class DataService extends Service {
                 ProtoConverter.contentValuesFromRecordSession(recordSession.build()));
 
         recordSession = null;
+        flushSensorDataToDatabase();
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
         EventBus.getDefault().unregister(this);
+        flushSensorDataToDatabase();
     }
 
     @Nullable

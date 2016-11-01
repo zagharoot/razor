@@ -88,4 +88,6 @@ message RunSession {
 message RecordSession {
     optional int64 start_timestamp_msec = 1;
     optional int64 end_timestamp_msec = 2;
+
+    repeated SensorData sensor_data = 3;
 }
