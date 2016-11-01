@@ -1,14 +1,23 @@
 package com.razorski.razor;
 
-import android.support.v7.app.AppCompatActivity;
+import android.database.Cursor;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
+import android.widget.ListView;
+
+import com.razorski.razor.data.DataContract;
 
 /**
  * This activity shows the list of recorded sessions. Use can click on each one to see the
  * details of each recorded session.
  */
 public class RecordSessionsActivity extends AppCompatActivity {
+
+    private RecordSessionsListAdapter recordAdapter;
+
+    // Pointer to my UI elements.
+    private ListView listView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,6 +29,14 @@ public class RecordSessionsActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
+
+
+        Cursor c = getContentResolver().query(
+                DataContract.RecordSessionEntry.CONTENT_URI, null, null, null, null);
+
+        recordAdapter = new RecordSessionsListAdapter(this, c, 0);
+        ListView listView = (ListView) findViewById(R.id.record_sessions_list);
+        listView.setAdapter(recordAdapter);
     }
 
     @Override
