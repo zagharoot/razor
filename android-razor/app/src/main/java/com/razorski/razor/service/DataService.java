@@ -148,6 +148,8 @@ public class DataService extends Service {
         } else {
             Log.e(TAG, "Trying to start record where we're already recording");
         }
+
+        // TODO: Move to foreground.
     }
 
     // Stops a recording session.
