@@ -180,6 +180,9 @@ public class MainActivity extends AppCompatActivity
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+                drawer.closeDrawer(GravityCompat.START);
+
                 Intent intent = new Intent(getBaseContext(), LoginActivity.class);
                 startActivity(intent);
             }
@@ -250,6 +253,14 @@ public class MainActivity extends AppCompatActivity
         // TODO: Take care of business here.
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
+
+        switch (item.getOrder()) {
+            case 0:
+                Toast.makeText(getApplicationContext(), "clicked", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(getBaseContext(), RecordSessionsActivity.class);
+                startActivity(intent);
+                return true;
+        }
         return true;
     }
 

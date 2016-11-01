@@ -8,14 +8,15 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
+        android:name=".RazorApp"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:name="com.razorski.razor.RazorApp"
         android:theme="@style/AppTheme">
-
-        <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/facebook_app_id"/>
+        <meta-data
+            android:name="com.facebook.sdk.ApplicationId"
+            android:value="@string/facebook_app_id" />
 
         <activity
             android:name=".MainActivity"
@@ -31,13 +32,17 @@
             android:name="com.facebook.FacebookActivity"
             android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
             android:label="aaa" />
-        <activity android:name=".LoginActivity"></activity>
+        <activity android:name=".LoginActivity" />
+
+        <activity android:name=".RecordSessionsActivity" />
 
         <provider
-            android:authorities="com.razorski.razor"
-            android:name=".data.RazorDataProvider" />
+            android:name=".data.RazorDataProvider"
+            android:authorities="com.razorski.razor" />
 
         <service android:name=".service.DataService" />
+
+        <activity android:name=".RecordSessionsActivity"></activity>
     </application>
 
 </manifest>
