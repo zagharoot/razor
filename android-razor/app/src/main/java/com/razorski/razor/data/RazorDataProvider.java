@@ -128,7 +128,16 @@ public class RazorDataProvider extends ContentProvider {
 
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
-        // TODO: Implement.
+        final SQLiteDatabase db = dbHelper.getWritableDatabase();
+        final int match = sensorUriMatcher.match(uri);
+
+        switch (match) {
+            case RECORD_SESSION:
+                db.delete(DataContract.RecordSessionEntry.TABLE_NAME, selection, selectionArgs);
+                break;
+            default:
+                throw new UnsupportedOperationException("Unknown delete uri: " + uri);
+        }
         return 0;
     }
 
