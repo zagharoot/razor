@@ -21,9 +21,9 @@ public class RazorDataProvider extends ContentProvider {
     // Different type of URIs we support:
 
     // Direct simple access to sensor table.
-    static final int SENSOR = 100;
+    private static final int SENSOR = 100;
     // Direct simple access to record-session table.
-    static final int RECORD_SESSION = 200;
+    private static final int RECORD_SESSION = 200;
 
     private static final SQLiteQueryBuilder sensorQueryBuilder;
     private static final SQLiteQueryBuilder recordSessionQueryBuilder;
