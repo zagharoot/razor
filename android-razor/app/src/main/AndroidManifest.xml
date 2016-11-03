@@ -37,12 +37,10 @@
         <activity android:name=".RecordSessionsActivity" />
 
         <provider
-            android:name=".data.RazorDataProvider"
+            android:name=".data.CloudDataProvider"
             android:authorities="com.razorski.razor" />
 
         <service android:name=".service.DataService" />
-
-        <activity android:name=".RecordSessionsActivity"></activity>
     </application>
 
 </manifest>

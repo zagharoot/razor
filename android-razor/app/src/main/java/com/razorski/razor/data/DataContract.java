@@ -48,6 +48,10 @@ public class DataContract {
             return ContentUris.withAppendedId(CONTENT_URI, id);
         }
 
+        public static Uri uriForId(String id) {
+            return CONTENT_URI.buildUpon().appendPath(id).build();
+        }
+
         public static long idFromUri(Uri uri) {
             List<String> segments = uri.getPathSegments();
             if (segments.size() != 2) {
@@ -120,6 +124,10 @@ public class DataContract {
 
         public static Uri uriForId(long id) {
             return ContentUris.withAppendedId(CONTENT_URI, id);
+        }
+
+        public static Uri uriForId(String id) {
+            return CONTENT_URI.buildUpon().appendPath(id).build();
         }
 
         public static Uri uriForSensorReading(SensorData sensorData) {

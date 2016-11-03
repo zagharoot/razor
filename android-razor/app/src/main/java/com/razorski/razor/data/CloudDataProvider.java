@@ -9,11 +9,6 @@ import android.support.annotation.Nullable;
 
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.razorski.razor.RecordSession;
-import com.razorski.razor.SensorData;
-
-import static com.razorski.razor.data.RazorDataProvider.RECORD_SESSION;
-import static com.razorski.razor.data.RazorDataProvider.SENSOR;
 
 /**
  * A content provider that uses google cloud to serve data.
@@ -43,20 +38,61 @@ public class CloudDataProvider extends ContentProvider {
         return null;
     }
 
-    @Nullable
     @Override
     public String getType(Uri uri) {
-        return null;
+
+        final int match = uriMatcher.match(uri);
+
+        switch (match) {
+            // Direct access to sensor table will return multiple items.
+            case SENSOR:
+                return DataContract.SensorEntry.CONTENT_TYPE;
+            case RECORD_SESSION:
+                return DataContract.RecordSessionEntry.CONTENT_TYPE;
+            default:
+                throw new UnsupportedOperationException("Unknown uri: " + uri);
+        }
     }
 
-    @Nullable
     @Override
     public Uri insert(Uri uri, ContentValues values) {
-        return null;
+        final int match = uriMatcher.match(uri);
+        Uri result;
+
+        DatabaseReference reference = getReference(match);
+
+        switch (match) {
+            case RECORD_SESSION:
+                CloudProtoHelper.RecordSessionFB recordSessionFB =
+                        new CloudProtoHelper.RecordSessionFB(values);
+                DatabaseReference newRecord = reference.push();
+                newRecord.setValue(recordSessionFB);
+                result = DataContract.RecordSessionEntry.uriForId(newRecord.getKey());
+                break;
+            case SENSOR:
+                CloudProtoHelper.SensorDataFB sensorDataFB =
+                        new CloudProtoHelper.SensorDataFB(values);
+                DatabaseReference newSensorRecord = reference.push();
+                newSensorRecord.setValue(sensorDataFB);
+                result = DataContract.RecordSessionEntry.uriForId(newSensorRecord.getKey());
+                break;
+            default:
+                throw new UnsupportedOperationException("Unknow uri: " + uri);
+        }
+        getContext().getContentResolver().notifyChange(uri, null);
+        return result;
     }
 
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
+        if (selection != null && !selection.isEmpty()) {
+            throw new UnsupportedOperationException("Can't delete with selection: " + selection);
+        }
+
+        DatabaseReference reference = getReference(uriMatcher.match(uri));
+        if (reference != null) {
+            reference.removeValue();
+        }
         return 0;
     }
 
@@ -75,8 +111,8 @@ public class CloudDataProvider extends ContentProvider {
         return matcher;
     }
 
-    DatabaseReference getReference(Uri uri) {
-        switch (uriMatcher.match(uri)) {
+    DatabaseReference getReference(int target) {
+        switch (target) {
             case RECORD_SESSION:
                 return database.getReference(DataContract.RecordSessionEntry.TABLE_NAME);
             case SENSOR:
