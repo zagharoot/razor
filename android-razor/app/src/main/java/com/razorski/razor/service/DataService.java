@@ -1,20 +1,19 @@
 package com.razorski.razor.service;
 
 import android.app.Service;
-import android.content.ContentValues;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.annotation.WorkerThread;
 import android.util.Log;
 
+import com.google.firebase.database.DatabaseReference;
 import com.razorski.razor.EventMessage;
 import com.razorski.razor.PhoneSensorCollector;
 import com.razorski.razor.RecordSession;
 import com.razorski.razor.SensorData;
-import com.razorski.razor.data.DataContract;
-import com.razorski.razor.data.ProtoConverter;
+import com.razorski.razor.data.FirebaseContract;
+import com.razorski.razor.data.FirebaseDataProtos;
 import com.razorski.razor.data.SensorDataProtoParser;
 import com.razorski.razor.data.SensorDataStreamParser;
 
@@ -22,7 +21,6 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
-import java.util.ArrayList;
 import java.util.Queue;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -127,16 +125,11 @@ public class DataService extends Service {
             return;
         }
 
-        ArrayList<ContentValues> valuesList = new ArrayList<>();
+        DatabaseReference reference = FirebaseContract.getSensorsRef();
         while (!unprocessedData.isEmpty()) {
             SensorData sensorData = unprocessedData.remove();
-            valuesList.add(ProtoConverter.contentValuesFromSensorData(sensorData));
+            reference.push().setValue(new FirebaseDataProtos.SensorDataFB(sensorData));
         }
-        ContentValues[] valuesArray = new ContentValues[valuesList.size()];
-        valuesList.toArray(valuesArray);
-        int recordsWritten = getContentResolver().bulkInsert(
-                DataContract.SensorEntry.CONTENT_URI, valuesArray);
-        Log.d(TAG, "Wrote " + recordsWritten + " sensor data to database.");
     }
 
     @WorkerThread
@@ -161,8 +154,8 @@ public class DataService extends Service {
 
         recordSession = recordSession.setEndTimestampMsec(System.currentTimeMillis());
 
-        Uri uri = getContentResolver().insert(DataContract.RecordSessionEntry.CONTENT_URI,
-                ProtoConverter.contentValuesFromRecordSession(recordSession.build()));
+        DatabaseReference reference = FirebaseContract.getRecordSessionsRef();
+        reference.push().setValue(new FirebaseDataProtos.RecordSessionFB(recordSession.build()));
 
         recordSession = null;
         flushSensorDataToDatabase();

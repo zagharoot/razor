@@ -1,24 +1,20 @@
 package com.razorski.razor;
 
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ListView;
 
-import com.razorski.razor.data.DataContract;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.Query;
+import com.razorski.razor.data.FirebaseContract;
 
 /**
  * This activity shows the list of recorded sessions. Use can click on each one to see the
  * details of each recorded session.
  */
-public class RecordSessionsActivity extends AppCompatActivity  implements
-        LoaderManager.LoaderCallbacks<Cursor> {
+public class RecordSessionsActivity extends AppCompatActivity {
 
     private RecordSessionsListAdapter recordAdapter;
 
@@ -39,16 +35,12 @@ public class RecordSessionsActivity extends AppCompatActivity  implements
             getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
 
+        DatabaseReference allRecordSessions = FirebaseContract.getRecordSessionsRef();
+        Query query = allRecordSessions;
+        recordAdapter = new RecordSessionsListAdapter(query, this);
 
-        Cursor c = getContentResolver().query(
-                DataContract.RecordSessionEntry.CONTENT_URI, null, null, null,
-                DataContract.RecordSessionEntry.COL_START_TIMESTAMP_MSEC + " DESC");
-
-        recordAdapter = new RecordSessionsListAdapter(this, c, 0);
         ListView listView = (ListView) findViewById(R.id.record_sessions_list);
         listView.setAdapter(recordAdapter);
-
-        getSupportLoaderManager().initLoader(RECORD_SESSIONS_LOADER, null, this);
     }
 
     @Override
@@ -63,8 +55,6 @@ public class RecordSessionsActivity extends AppCompatActivity  implements
         int id = item.getItemId();
 
         if (id == R.id.delete_record_sessions) {
-            getContentResolver().delete(DataContract.RecordSessionEntry.CONTENT_URI, "", null);
-            getSupportLoaderManager().restartLoader(RECORD_SESSIONS_LOADER, null, this);
             return true;
         }
 
@@ -73,25 +63,5 @@ public class RecordSessionsActivity extends AppCompatActivity  implements
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        // This is called when a new Loader needs to be created.
-
-        String sortOrder = DataContract.RecordSessionEntry.COL_START_TIMESTAMP_MSEC + " DESC";
-        Uri uri = DataContract.RecordSessionEntry.CONTENT_URI;
-
-        return new CursorLoader(this, uri, null, null, null, sortOrder);
-    }
-
-    @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        recordAdapter.swapCursor(data);
-    }
-
-    @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
-        recordAdapter.swapCursor(null);
     }
 }

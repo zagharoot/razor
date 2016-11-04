@@ -1,20 +1,33 @@
 package com.razorski.razor;
 
-import android.content.Context;
-import android.database.Cursor;
-import android.support.v4.widget.CursorAdapter;
-import android.view.LayoutInflater;
+import android.app.Activity;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.razorski.razor.data.ProtoConverter;
+import com.google.firebase.database.Query;
+import com.razorski.razor.data.FirebaseDataProtos;
 
 /**
  * Provides items to be placed in the list view.
  */
 
-public class RecordSessionsListAdapter extends CursorAdapter {
+public class RecordSessionsListAdapter extends FirebaseListAdapter<FirebaseDataProtos.RecordSessionFB> {
+
+    public RecordSessionsListAdapter(Query mRef, Activity activity) {
+        super(mRef, FirebaseDataProtos.RecordSessionFB.class, R.layout.list_item_record_session,
+                activity);
+    }
+
+    @Override
+    protected void populateView(View v, FirebaseDataProtos.RecordSessionFB model) {
+        ViewHolder viewHolder = new ViewHolder(v);
+
+        long startTimeMsec = model.startTimestampMsec;
+        viewHolder.statTimeView.setText(Utils.NiceTimeFormatFromMillis(startTimeMsec));
+
+        long duration = model.endTimestampMsec - model.startTimestampMsec;
+        viewHolder.durationView.setText(Utils.NiceDurationFormatFromMillis(duration));
+    }
 
     /**
      * Cache of the children views for a forecast list item.
@@ -27,32 +40,5 @@ public class RecordSessionsListAdapter extends CursorAdapter {
             statTimeView = (TextView) view.findViewById(R.id.list_item_start_time_textview);
             durationView = (TextView) view.findViewById(R.id.list_item_duration_textview);
         }
-    }
-
-    public RecordSessionsListAdapter(Context context, Cursor c, int flags) {
-        super(context, c, flags);
-    }
-
-    @Override
-    public View newView(Context context, Cursor cursor, ViewGroup parent) {
-        View view = LayoutInflater.from(context).inflate(R.layout.list_item_record_session,
-                parent, false);
-
-        ViewHolder viewHolder = new ViewHolder(view);
-        view.setTag(viewHolder);
-
-        return view;
-    }
-
-    @Override
-    public void bindView(View view, Context context, Cursor cursor) {
-        ViewHolder viewHolder = (ViewHolder) view.getTag();
-
-        RecordSession recordSession = ProtoConverter.recordSessionFromCursor(cursor);
-        long startTimeMsec = recordSession.getStartTimestampMsec();
-        viewHolder.statTimeView.setText(Utils.NiceTimeFormatFromMillis(startTimeMsec));
-
-        long duration = recordSession.getEndTimestampMsec() - recordSession.getStartTimestampMsec();
-        viewHolder.durationView.setText(Utils.NiceDurationFormatFromMillis(duration));
     }
 }
