@@ -40,4 +40,8 @@ public class FirebaseContract {
     public static DatabaseReference getSensorsRef() {
         return getDatabase().getReference(USERS_PATH + "/" + getUsername() + "/" + SENSOR_PATH);
     }
+
+    public static void deleteAllDataForCurrentUser() {
+        getUserRef().removeValue();
+    }
 }
