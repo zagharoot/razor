@@ -74,7 +74,7 @@ public class MainActivity extends AppCompatActivity
                     progressBar.setVisibility(View.INVISIBLE);
                     connectionCheckBox.setText("Connected");
                     connectionCheckBox.setChecked(true);
-                    recordSwitch.setVisibility(View.VISIBLE);
+                    Utils.visibleIfLoggedIn(recordSwitch);
                 }
                 break;
             case HW_CONNECTING:
@@ -173,6 +173,17 @@ public class MainActivity extends AppCompatActivity
 
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        // Clicking on the header will take us to the login page.
+        navigationView.getHeaderView(0).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+                drawer.closeDrawer(GravityCompat.START);
+
+                Intent intent = new Intent(getBaseContext(), LoginActivity.class);
+                startActivity(intent);
+            }
+        });
 
         // Click on the login button in the navigation view will take us to the login page.
         Button loginButton = (Button) navigationView.getHeaderView(0)
@@ -250,13 +261,11 @@ public class MainActivity extends AppCompatActivity
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        // TODO: Take care of business here.
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
 
         switch (item.getOrder()) {
             case 0:
-                Toast.makeText(getApplicationContext(), "clicked", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(getBaseContext(), RecordSessionsActivity.class);
                 startActivity(intent);
                 return true;
@@ -316,10 +325,16 @@ public class MainActivity extends AppCompatActivity
         NetworkImageView profileImage = (NetworkImageView) header.findViewById(R.id.nav_bar_profile_pic);
         TextView userName = (TextView) header.findViewById(R.id.nav_bar_user_name);
 
-        login.setText("LOGOUT");
+        login.setVisibility(View.GONE);
+        userName.setVisibility(View.VISIBLE);
+        profileImage.setVisibility(View.VISIBLE);
         userName.setText(profile.getName());
         profileImage.setImageUrl(profile.getProfilePictureUri(1000, 1000).toString(),
                 VolleySingleton.getInstance().getImageLoader());
+
+        recordSwitch.setVisibility(View.VISIBLE);
+        navigationView.getMenu().clear();
+        navigationView.inflateMenu(R.menu.activity_main_drawer_loggedin);
     }
 
     /**
@@ -331,10 +346,18 @@ public class MainActivity extends AppCompatActivity
 
         View header = navigationView.getHeaderView(0);
         Button login = (Button) header.findViewById(R.id.nav_bar_login_button);
-        ImageView profileImage = (ImageView) header.findViewById(R.id.nav_bar_profile_pic);
-        TextView userName = (TextView) header.findViewById(R.id.nav_bar_user_name);
 
-        login.setText("LOGIN");
+        ImageView profileImage = (ImageView) header.findViewById(R.id.nav_bar_profile_pic);
+        profileImage.setImageURI(null);
+        TextView userName = (TextView) header.findViewById(R.id.nav_bar_user_name);
         userName.setText("");
+
+        login.setVisibility(View.VISIBLE);
+        userName.setVisibility(View.GONE);
+        profileImage.setVisibility(View.GONE);
+
+        recordSwitch.setVisibility(View.INVISIBLE);
+        navigationView.getMenu().clear();
+        navigationView.inflateMenu(R.menu.activity_main_drawer_loggedout);
     }
 }

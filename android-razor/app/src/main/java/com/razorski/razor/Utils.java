@@ -1,5 +1,9 @@
 package com.razorski.razor;
 
+import android.view.View;
+
+import com.google.firebase.auth.FirebaseAuth;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -32,5 +36,19 @@ public class Utils {
 
         duration /= 60;
         return "" + duration + " H";
+    }
+
+    // Returns true if someone is logged in.
+    public static boolean isLoggedIn() {
+        return FirebaseAuth.getInstance().getCurrentUser() != null;
+    }
+
+    // Makes the view visible only if a user is logged in.
+    public static void visibleIfLoggedIn(View view) {
+        if (isLoggedIn()) {
+            view.setVisibility(View.VISIBLE);
+        } else {
+            view.setVisibility(View.INVISIBLE);
+        }
     }
 }
