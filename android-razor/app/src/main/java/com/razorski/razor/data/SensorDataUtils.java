@@ -34,7 +34,8 @@ public class SensorDataUtils {
     public static String toString(SensorData data) {
 //        return "{" + toString(data.getLeft()) + "," + toString(data.getRight()) + "}";
         LocationData loc = data.getPhoneData().getLocationData();
-        return toString(data.getLeft()) + "\n\n" +
+        return "Right:\n" + toString(data.getRight()) +
+                "\nLeft:\n" + toString(data.getLeft()) + "\n\n" +
                 String.format("Loc: {%1.3f,%2.3f,%3.3f,%4.3f,%5.3f}\n" +
                         "Time: " + formatDateTime(data.getTimestampMsec()),
                         loc.getLatitude(), loc.getLongitude(), loc.getSpeed(), loc.getAltitude(),
