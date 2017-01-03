@@ -199,6 +199,18 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
+        // A button to login an anonymous user for debugging.
+        Button anonymousLoginbutton = (Button) navigationView.getHeaderView(0)
+                .findViewById(R.id.test_login_button);
+        anonymousLoginbutton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+                drawer.closeDrawer(GravityCompat.START);
+                performAnonymousLogin();
+            }
+        });
+
         connectionCheckBox = (CheckBox) findViewById(R.id.connectionStatus);
         // Clicking on the connected checkbox will toggle connect/disconnect from HW.
         connectionCheckBox.setOnClickListener(new View.OnClickListener() {
@@ -284,7 +296,7 @@ public class MainActivity extends AppCompatActivity
                 if (newProfile != null) {
                     // We also have token.
                     if (AccessToken.getCurrentAccessToken() != null) {
-                        performLogin();
+                        performFacebookLogin();
                     }
                 } else {
                     performLogout();
@@ -297,7 +309,7 @@ public class MainActivity extends AppCompatActivity
     /**
      * Logs in the user. Assumes that AccessToken and Profile data are available from facebook.
      */
-    private void performLogin() {
+    private void performFacebookLogin() {
         AccessToken token = AccessToken.getCurrentAccessToken();
         Profile profile = Profile.getCurrentProfile();
         if (token == null || profile == null) {
@@ -324,13 +336,48 @@ public class MainActivity extends AppCompatActivity
         Button login = (Button) header.findViewById(R.id.nav_bar_login_button);
         NetworkImageView profileImage = (NetworkImageView) header.findViewById(R.id.nav_bar_profile_pic);
         TextView userName = (TextView) header.findViewById(R.id.nav_bar_user_name);
+        Button anonymousLogin = (Button) header.findViewById(R.id.test_login_button);
 
         login.setVisibility(View.GONE);
+        anonymousLogin.setVisibility(View.GONE);
         userName.setVisibility(View.VISIBLE);
         profileImage.setVisibility(View.VISIBLE);
         userName.setText(profile.getName());
         profileImage.setImageUrl(profile.getProfilePictureUri(1000, 1000).toString(),
                 VolleySingleton.getInstance().getImageLoader());
+
+        recordSwitch.setVisibility(View.VISIBLE);
+        navigationView.getMenu().clear();
+        navigationView.inflateMenu(R.menu.activity_main_drawer_loggedin);
+    }
+
+    private void performAnonymousLogin() {
+        firebaseAuth.signInAnonymously()
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        Log.d(TAG, "signInWithCredential:onComplete:" + task.isSuccessful());
+                        if (!task.isSuccessful()) {
+                            Log.w(TAG, "signInWithCredential", task.getException());
+                            Toast.makeText(getApplicationContext(), "Authentication faileddddd.",
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+
+        // Also update the profile pic and name of the user in the navigation drawer.
+        View header = navigationView.getHeaderView(0);
+        Button login = (Button) header.findViewById(R.id.nav_bar_login_button);
+        NetworkImageView profileImage = (NetworkImageView) header.findViewById(R.id.nav_bar_profile_pic);
+        TextView userName = (TextView) header.findViewById(R.id.nav_bar_user_name);
+        Button anonymousLogin = (Button) header.findViewById(R.id.test_login_button);
+
+        login.setVisibility(View.GONE);
+        anonymousLogin.setVisibility(View.GONE);
+        userName.setVisibility(View.VISIBLE);
+        profileImage.setVisibility(View.VISIBLE);
+        userName.setText("Test user");
+        profileImage.setVisibility(View.GONE);
 
         recordSwitch.setVisibility(View.VISIBLE);
         navigationView.getMenu().clear();
@@ -346,6 +393,7 @@ public class MainActivity extends AppCompatActivity
 
         View header = navigationView.getHeaderView(0);
         Button login = (Button) header.findViewById(R.id.nav_bar_login_button);
+        Button anonymousLogin = (Button) header.findViewById(R.id.test_login_button);
 
         ImageView profileImage = (ImageView) header.findViewById(R.id.nav_bar_profile_pic);
         profileImage.setImageURI(null);
@@ -353,6 +401,7 @@ public class MainActivity extends AppCompatActivity
         userName.setText("");
 
         login.setVisibility(View.VISIBLE);
+        anonymousLogin.setVisibility(View.VISIBLE);
         userName.setVisibility(View.GONE);
         profileImage.setVisibility(View.GONE);
 
