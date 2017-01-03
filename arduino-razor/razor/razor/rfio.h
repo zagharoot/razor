@@ -17,7 +17,7 @@ class RFIO {
     // struct, updates foot_data and returns true.
     // Otherwise, this will be a partial reading of the struct and will return false.
     bool tryReadFootSensorData(FootSensorData* foot_data) {
-      if (!rf_radio_->available()) {
+      if (!rf_radio_->isValid() || !rf_radio_->available()) {
         return false;
       }
 

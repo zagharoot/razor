@@ -1,7 +1,7 @@
 /**
- * The main Razor Program:
- * Collects sensor data and sends them over bluetooth to the Razor app on Phone.
- */
+   The main Razor Program:
+   Collects sensor data and sends them over bluetooth to the Razor app on Phone.
+*/
 
 // So we can communicate to the Bluetooth module.
 // Make sure you put a symlink to the IMUProcessor.h in the Arduino libraries for this to work.
@@ -10,7 +10,7 @@
 #include "IMUProcessor.h"
 #include "RF24.h"
 #include "pb_encode.h"
-#include "rf24utils.h"
+#include "rfio.h"
 #include "sensor.pb.h"
 
 // Uncomment one of these lines based on what board you want to use the code with:
@@ -34,6 +34,7 @@ const int kPressureFrontPin = A3;
 const int kInterruptPin = 7;
 
 // CE and CSN ports for the RF24 transmitter.
+// Set either one to 0xFF if the radio hardware is not present.
 const int kRF24CE = 0;
 const int kRF24CSN = 1;
 
@@ -55,7 +56,7 @@ byte pipe_address[][6] = {"1Node"};
 // How often the two feet communicate with each other.
 const int kBetweenFeetDataSyncMsec = 100;
 // How often master foot communicates with phone.
-const int kPhoneDataSyncMsec = 500;
+const int kPhoneDataSyncMsec = 200;
 
 // Which foot are we running as.
 // Left foot is the slave. It only reads sensor data and RF sends it to right foot.
@@ -103,7 +104,7 @@ void setup() {
     // Set the data rate for the SoftwareSerial port. Bluetooth module works on 9600, so
     // don't change this.
     Serial1.begin(9600);
-  
+
     foot_data = &(sensor_data.right);
   } else {
     Serial.println(F("Running as slave for left foot"));
@@ -116,11 +117,10 @@ unsigned long last_time = millis();
 void loopForMaster() {
   uint8_t buffer[160];
   // Receive data from the other foot if available.
-//    rf_radio.read(&(sensor_data.left), sizeof(FootSensorData));
-  if (rfio.readFootSensorData(&(sensor_data.left))) {
+  if (rfio.tryReadFootSensorData(&(sensor_data.left))) {
     Serial.println(F("Received slave foot data"));
   }
-  
+
   if (millis() - last_time > kPhoneDataSyncMsec) {
     // Things we need to send over bluetooth.
     pb_ostream_t stream = pb_ostream_from_buffer(buffer, sizeof(buffer));
@@ -128,7 +128,6 @@ void loopForMaster() {
     if (!status) {
       Serial.println(F("Error encoding"));
     } else {
-//      Serial.print(F("Wrote bytes: ")); Serial.println(stream.bytes_written);
       Serial1.write(buffer, stream.bytes_written);
       sensor_data = SensorData_init_zero;
     }
@@ -145,6 +144,7 @@ void loopForSlave() {
 }
 
 void loop() {
+  foot_data->pressure_front = analogRead(kPressureFrontPin);
   // Always read the data, so the data can be calculated correctly.
   // TODO: get rid of the temp code here.
   if (is_right_foot) {
@@ -155,14 +155,14 @@ void loop() {
     foot_data->imu_data.az = 13;
     foot_data->imu_data.gx = 14;
     foot_data->imu_data.gy = 15;
-    foot_data->imu_data.gz =16;
+    foot_data->imu_data.gz = 16;
     foot_data->imu_data.yaw = 17;
     foot_data->imu_data.pitch = 18;
     foot_data->imu_data.roll = 19;
     foot_data->imu_data.temperature = 20;
     foot_data->pressure_front = 21; // analogRead(kPressureFrontPin);
   }
-  
+
   if (is_right_foot) {
     loopForMaster();
   } else {
