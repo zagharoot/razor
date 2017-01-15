@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Generator: Adobe Illustrator 15.0.2, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   version="1.2"
+   id="Layer_1"
+   x="0px"
+   y="0px"
+   width="57.643px"
+   height="71.833px"
+   viewBox="0 0 57.643 71.833"
+   xml:space="preserve"
+   inkscape:version="0.91 r13725"
+   sodipodi:docname="MPU-9250-half_SC.svg.2016_12_22_11_01_18.0.svg"><metadata
+     id="metadata111"><rdf:RDF><cc:Work
+         rdf:about=""><dc:format>image/svg+xml</dc:format><dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" /></cc:Work></rdf:RDF></metadata><defs
+     id="defs109" /><sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="2480"
+     inkscape:window-height="1395"
+     id="namedview107"
+     showgrid="false"
+     inkscape:zoom="5.71"
+     inkscape:cx="2.7146586"
+     inkscape:cy="17.867147"
+     inkscape:window-x="80"
+     inkscape:window-y="1"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="Layer_1" /><g
+     id="background"
+     transform="matrix(0.42774096,0,0,0.60543721,15.49299,9.1601866)"><rect
+       x="-28.625"
+       y="-21.614"
+       width="122.108"
+       height="122.062"
+       id="rect4"
+       style="fill:#f2f2f2" /></g><g
+     id="schematic"><rect
+       id="part_symbol"
+       x="7.2"
+       y="7.2"
+       width="43.199"
+       height="57.599"
+       stroke-linecap="round"
+       stroke-width="0.9002"
+       stroke="#000000"
+       fill="#FFFFFF" /><g
+       id="pins"
+       transform="matrix(0,1,-1,0,61.612027,-0.57850167)"><line
+         x1="0"
+         y1="28.799999"
+         x2="7.1999998"
+         y2="28.799999"
+         id="line31"
+         style="fill:none;stroke:#555555;stroke-width:0.69999999;stroke-linecap:round;stroke-linejoin:round" /><line
+         x1="0"
+         y1="21.6"
+         x2="7.1999998"
+         y2="21.6"
+         id="line33"
+         style="fill:none;stroke:#555555;stroke-width:0.69999999;stroke-linecap:round;stroke-linejoin:round" /><line
+         x1="0"
+         y1="43.200001"
+         x2="7.1999998"
+         y2="43.200001"
+         id="line35"
+         style="fill:none;stroke:#555555;stroke-width:0.69999999;stroke-linecap:round;stroke-linejoin:round" /><line
+         x1="0"
+         y1="36"
+         x2="7.1999998"
+         y2="36"
+         id="line37"
+         style="fill:none;stroke:#555555;stroke-width:0.69999999;stroke-linecap:round;stroke-linejoin:round" /></g><g
+       id="pin_labels"><text
+         font-size="4.5"
+         id="text81"
+         x="-17.155529"
+         y="41.413231"
+         style="font-size:4.5px;font-family:DroidSans;fill:#555555"
+         transform="matrix(0,-1,1,0,0,0)">Gnd</text>
+<text
+         transform="matrix(0,-1,1,0,0,0)"
+         font-size="4.5"
+         id="text75"
+         x="-16.834053"
+         y="35.183739"
+         style="font-size:4.5px;font-family:DroidSans;fill:#555555">VCC</text>
+<text
+         transform="matrix(0,-1,1,0,0,0)"
+         font-size="4.5"
+         id="text83"
+         x="-16.816832"
+         y="27.519939"
+         style="font-size:4.5px;font-family:DroidSans;fill:#555555">SDA</text>
+<text
+         transform="matrix(0,-1,1,0,0,0)"
+         font-size="4.5"
+         id="text95"
+         x="-15.895653"
+         y="19.685354"
+         style="font-size:4.5px;font-family:DroidSans;fill:#555555">SCL</text>
+<text
+         style="font-size:4.5px;font-family:DroidSans;fill:#555555"
+         y="2.1758049"
+         x="19.212086"
+         id="text4279"
+         font-size="4.5">4</text>
+<text
+         font-size="4.5"
+         id="text4281"
+         x="26.861174"
+         y="2.0681903"
+         style="font-size:4.5px;font-family:DroidSans;fill:#555555">3</text>
+<text
+         style="font-size:4.5px;font-family:DroidSans;fill:#555555"
+         y="2.0956132"
+         x="33.978416"
+         id="text4283"
+         font-size="4.5">2</text>
+<text
+         font-size="4.5"
+         id="text4285"
+         x="41.952419"
+         y="2.2433217"
+         style="font-size:4.5px;font-family:DroidSans;fill:#555555">1</text>
+</g><text
+       font-size="6"
+       id="text103"
+       style="font-size:6px;font-family:DroidSans"
+       x="14.66741"
+       y="37.883774">MPU-9250 </text>
+</g></svg>
