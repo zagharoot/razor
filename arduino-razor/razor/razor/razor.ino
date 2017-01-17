@@ -29,23 +29,25 @@ const int kInterruptPin = 12;
 #else
 #ifdef BOARD_MKR1000
 // The pin that pressure sensor is connected to.
-const int kPressureFrontPin = A2;
+const int kPressureFrontPin =               A2;
 // Interrupt pin used for MPU-9250.
-const int kInterruptPin = 7;
+const int kInterruptPin =                   7;
 
 // CE and CSN ports for the RF24 transmitter.
 // Set either one to 0xFF if the radio hardware is not present.
-const int kRF24CE = 0;
-const int kRF24CSN = 1;
+const int kRF24CE =                         0;
+const int kRF24CSN =                        1;
 
 // Connect this pin to ground for the slave one, leave it open for master.
-const int kSlaveDetectorPin = 5;
+const int kSlaveDetectorPin =               5;
 // This is connected to the switch to sense when we press the switch.
 // This is an input and used as pull_down, so whenever the button is pressed it goes high.
-const int kSwitchSensePin = 4;
+const int kSwitchSensePin =                 4;
 // This is an output pin that powers the soft switch, we set it to high programmatically
 // as soon as we power up.
-const int kAlwaysUpPin = A3;
+const int kAlwaysUpPin =                    A3;
+// Pin to attach the buzzer.
+const int kBuzzerPin =                      A4;
 #endif
 #endif
 
@@ -151,6 +153,7 @@ void loopForSlave() {
 
 void loop() {
   foot_data->pressure_front = analogRead(kPressureFrontPin);
+  Serial.println(foot_data->pressure_front);
   // Always read the data, so the data can be calculated correctly.
   // TODO: get rid of the temp code here.
   if (is_right_foot) {
